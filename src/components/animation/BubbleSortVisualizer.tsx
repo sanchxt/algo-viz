@@ -48,7 +48,7 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}
-              className="w-3 h-3 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full"
+              className="w-3 h-3 bg-gradient-to-r from-[rgb(var(--color-primary-400))] to-[rgb(var(--color-primary-500))] rounded-full"
               animate={{
                 scale: [1, 1.2, 1],
                 opacity: [0.7, 1, 0.7],
@@ -70,15 +70,15 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
 
   const getBarGradient = (index: number): string => {
     if (currentStep.swapIndices?.includes(index)) {
-      return "from-red-400 via-pink-500 to-red-600";
+      return "from-[rgb(var(--color-danger-400))] via-[rgb(var(--color-danger-500))] to-[rgb(var(--color-danger-600))]";
     }
     if (currentStep.compareIndices?.includes(index)) {
-      return "from-yellow-400 via-orange-400 to-yellow-600";
+      return "from-[rgb(var(--color-warning-400))] via-[rgb(var(--color-warning-500))] to-[rgb(var(--color-warning-600))]";
     }
     if (currentStep.highlightedIndices?.includes(index)) {
-      return "from-green-400 via-emerald-500 to-green-600";
+      return "from-[rgb(var(--color-accent-400))] via-[rgb(var(--color-accent-500))] to-[rgb(var(--color-accent-600))]";
     }
-    return "from-blue-400 via-indigo-500 to-blue-600";
+    return "from-[rgb(var(--color-primary-400))] via-[rgb(var(--color-primary-500))] to-[rgb(var(--color-primary-600))]";
   };
 
   const getBarHeight = (value: number): number => {
@@ -126,7 +126,7 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
         {/* background gradient orbs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div
-            className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/30 to-purple-600/30 rounded-full blur-3xl"
+            className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-[rgb(var(--color-primary-400)/0.3)] to-[rgb(var(--color-primary-600)/0.3)] rounded-full blur-3xl"
             animate={{
               scale: [1, 1.2, 1],
               rotate: [0, 180, 360],
@@ -138,7 +138,7 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
             }}
           />
           <motion.div
-            className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-pink-400/30 to-orange-600/30 rounded-full blur-3xl"
+            className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-[rgb(var(--color-secondary-400)/0.3)] to-[rgb(var(--color-secondary-600)/0.3)] rounded-full blur-3xl"
             animate={{
               scale: [1.2, 1, 1.2],
               rotate: [360, 180, 0],
@@ -158,10 +158,10 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.6 }}
         >
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-gray-800 via-gray-900 to-black bg-clip-text text-transparent mb-3">
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-[rgb(var(--color-text-primary))] via-gray-900 to-black bg-clip-text text-transparent mb-3">
             Bubble Sort Visualization
           </h2>
-          <p className="text-gray-600 text-lg font-medium">
+          <p className="text-[rgb(var(--color-text-primary))] text-lg font-medium">
             Watch the elegant dance of comparison and swapping
           </p>
         </motion.div>
@@ -282,7 +282,7 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
                   isAnimating ? "bg-green-400" : "bg-gray-400"
                 }`}
               />
-              <span className="text-sm text-gray-600 font-medium">
+              <span className="text-sm text-[rgb(var(--color-text-primary)] font-medium">
                 {isAnimating ? "Animating" : "Complete"}
               </span>
             </motion.div>
@@ -330,18 +330,26 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
         >
           {[
             {
-              color: "from-blue-400 to-blue-600",
+              color:
+                "from-[rgb(var(--color-primary-400))] to-[rgb(var(--color-primary-600))]",
               label: "Unsorted",
               icon: "◯",
             },
             {
-              color: "from-yellow-400 to-yellow-600",
+              color:
+                "from-[rgb(var(--color-warning-400))] to-[rgb(var(--color-warning-600))]",
               label: "Comparing",
               icon: "⚡",
             },
-            { color: "from-red-400 to-red-600", label: "Swapping", icon: "🔄" },
             {
-              color: "from-green-400 to-green-600",
+              color:
+                "from-[rgb(var(--color-danger-400))] to-[rgb(var(--color-danger-600))]",
+              label: "Swapping",
+              icon: "🔄",
+            },
+            {
+              color:
+                "from-[rgb(var(--color-accent-400))] to-[rgb(var(--color-accent-600))]",
               label: "Sorted",
               icon: "✓",
             },
@@ -357,7 +365,9 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
               >
                 {item.icon}
               </div>
-              <span className="text-gray-700 font-medium">{item.label}</span>
+              <span className="text-[rgb(var(--color-text-primary))] font-medium">
+                {item.label}
+              </span>
             </motion.div>
           ))}
         </motion.div>

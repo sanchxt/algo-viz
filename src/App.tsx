@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
 import BubbleSortVisualizer from "./components/animation/BubbleSortVisualizer";
 
-function App() {
+const App = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[rgb(var(--color-bg-primary))] via-[rgb(var(--color-bg-secondary))] to-[rgb(var(--color-bg-primary))] relative overflow-hidden">
       {/* background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
-          className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-400/20 to-purple-600/20 rounded-full blur-3xl"
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-[rgb(var(--color-primary-400)/0.2)] to-[rgb(var(--color-primary-600)/0.2)] rounded-full blur-3xl"
           animate={{
             scale: [1, 1.2, 1],
             x: [0, 100, 0],
@@ -20,7 +20,7 @@ function App() {
           }}
         />
         <motion.div
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-pink-400/20 to-orange-600/20 rounded-full blur-3xl"
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-[rgb(var(--color-secondary-400)/0.2)] to-[rgb(var(--color-secondary-600)/0.2)] rounded-full blur-3xl"
           animate={{
             scale: [1.2, 1, 1.2],
             x: [0, -100, 0],
@@ -43,7 +43,7 @@ function App() {
           transition={{ duration: 1, ease: "easeOut" }}
         >
           <motion.h1
-            className="text-7xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent"
+            className="text-7xl font-bold mb-6 bg-gradient-to-r from-[rgb(var(--color-text-white))] via-blue-100 to-purple-100 bg-clip-text text-transparent"
             animate={{
               backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
             }}
@@ -65,7 +65,7 @@ function App() {
             transition={{ delay: 0.5, duration: 0.8 }}
           >
             Experience the beauty of algorithms through
-            <span className="text-transparent bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text font-semibold">
+            <span className="text-transparent bg-gradient-to-r from-[rgb(var(--color-primary-400))] to-[rgb(var(--color-primary-600))] bg-clip-text font-semibold">
               {" "}
               interactive visualizations
             </span>
@@ -77,7 +77,7 @@ function App() {
           {[...Array(6)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full opacity-60"
+              className="absolute w-2 h-2 bg-gradient-to-r from-[rgb(var(--color-primary-400))] to-[rgb(var(--color-primary-500))] rounded-full opacity-60"
               style={{
                 left: `${20 + i * 15}%`,
                 top: `${30 + (i % 2) * 20}%`,
@@ -126,6 +126,6 @@ function App() {
       </div>
     </div>
   );
-}
+};
 
 export default App;
