@@ -1,9 +1,24 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
+import type { Language } from "../types/algorithm";
+import CodeDisplay from "../components/CodeDisplay";
+import { bubbleSortCodes } from "../constants/bubbleSortCode";
 import BubbleSortVisualizer from "../components/animation/BubbleSortVisualizer";
 
+const languageLabels: Record<Language, string> = {
+  javascript: "JavaScript",
+  cpp: "C++",
+};
+
 const BubbleSortPage = () => {
+  const [selectedLanguage, setSelectedLanguage] =
+    useState<Language>("javascript");
+  const [currentHighlightedLines, setCurrentHighlightedLines] = useState<
+    number[]
+  >([]);
+
   return (
     <>
       {/* navigation */}
@@ -67,8 +82,30 @@ const BubbleSortPage = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.8 }}
       >
-        <BubbleSortVisualizer />
+        <BubbleSortVisualizer
+          onStepChange={setCurrentHighlightedLines}
+          selectedLanguage={selectedLanguage}
+        />
       </motion.main>
+
+      {/* code display section */}
+      <motion.section
+        className="mt-16 max-w-4xl mx-auto"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, duration: 0.8 }}
+      >
+        <CodeDisplay
+          title="Bubble Sort Implementation"
+          language={selectedLanguage}
+          code={bubbleSortCodes[selectedLanguage]}
+          highlightedLines={currentHighlightedLines}
+          selectedLanguage={selectedLanguage}
+          onLanguageChange={setSelectedLanguage}
+          availableLanguages={Object.keys(languageLabels) as Language[]}
+          languageLabels={languageLabels}
+        />
+      </motion.section>
 
       {/* algorithm info */}
       <motion.section

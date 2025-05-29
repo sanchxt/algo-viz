@@ -1,10 +1,33 @@
+export type StepType =
+  | "initialization"
+  | "loop_start"
+  | "loop_condition"
+  | "comparison"
+  | "swap"
+  | "assignment"
+  | "function_call"
+  | "return"
+  | "tree_traversal"
+  | "graph_visit"
+  | "no_swap"
+  | "pass_complete";
+
+export interface StepContext {
+  loopType?: "outer" | "inner" | "while" | "recursive";
+  operation?: "read" | "write" | "compare";
+  dataStructure?: "array" | "tree" | "graph" | "stack" | "queue";
+  passNumber?: number;
+  iterationNumber?: number;
+}
+
 export interface AlgorithmStep {
   id: number;
   arrayState: number[];
   highlightedIndices: number[];
   compareIndices?: number[];
   swapIndices?: number[];
-  currentLine: number;
+  stepType: StepType;
+  stepContext?: StepContext;
   explanation: string;
   variables?: Record<string, any>;
 }
@@ -15,4 +38,18 @@ export interface Algorithm {
   category: "sorting" | "searching" | "trees";
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   description: string;
+}
+
+export type Language = "javascript" | "cpp";
+
+export interface LineRange {
+  start: number;
+  end: number;
+  primary?: number; // "main" line (when highlighting multiple)
+}
+
+export interface AlgorithmLineMapping {
+  [stepType: string]: {
+    [language: string]: number[] | LineRange;
+  };
 }

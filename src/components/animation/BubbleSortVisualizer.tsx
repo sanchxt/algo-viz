@@ -1,12 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
+import { SkipBack, Play, Pause, SkipForward, RotateCcw } from "lucide-react";
 
-import type { AlgorithmStep } from "../../types/algorithm";
+import type { AlgorithmStep, Language } from "../../types/algorithm";
 import { generateBubbleSortSteps } from "../../algorithms/sorting/bubbleSort";
+import { algorithmLineResolver } from "../../utils/AlgorithmLineResolver";
+import {
+  bubbleSortLineMapping,
+  BUBBLE_SORT_ALGORITHM_ID,
+} from "../../constants/bubbleSortLineMapping";
 
 interface BubbleSortVisualizerProps {
   initialArray?: number[];
   speed?: number;
+  onStepChange?: (highlightedLines: number[]) => void;
+  selectedLanguage?: Language;
 }
 
 const DEFAULT_INITIAL_ARRAY = [64, 34, 25];
@@ -15,74 +23,99 @@ const DEFAULT_SPEED = 1000;
 const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
   initialArray = DEFAULT_INITIAL_ARRAY,
   speed = DEFAULT_SPEED,
+  onStepChange,
+  selectedLanguage = "javascript",
 }) => {
   const [steps, setSteps] = useState<AlgorithmStep[]>([]);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(false);
   const [arrayForSort, setArrayForSort] = useState<number[]>([]);
+  const [hoveredButton, setHoveredButton] = useState<string | null>(null);
+
+  // register line mapping on component mount
+  useEffect(() => {
+    algorithmLineResolver.registerAlgorithm(
+      BUBBLE_SORT_ALGORITHM_ID,
+      bubbleSortLineMapping
+    );
+  }, []);
 
   useEffect(() => {
     setArrayForSort([...initialArray]);
   }, [initialArray]);
 
   useEffect(() => {
-    if (arrayForSort.length === 0 && initialArray.length > 0) {
-      // This handles the case where initialArray is provided but arrayForSort hasn't been set yet
-      // (e.g. if initialArray was empty then populated by parent)
-      // However, with the current setup, the above useEffect should handle it.
-      // For safety or if arrayForSort could be cleared, this might be relevant.
-      // For now, let's assume arrayForSort is correctly initialized by the above effect.
-    }
     if (arrayForSort.length > 0) {
       const bubbleSortSteps = generateBubbleSortSteps(arrayForSort);
       setSteps(bubbleSortSteps);
       setCurrentStepIndex(0);
-      setIsAnimating(false);
+      setIsAutoPlaying(false);
     } else {
       setSteps([]);
       setCurrentStepIndex(0);
-      setIsAnimating(false);
+      setIsAutoPlaying(false);
     }
   }, [arrayForSort]);
 
+  // handle step changes and line highlighting
   useEffect(() => {
-    if (steps.length === 0 || currentStepIndex >= steps.length) {
-      setIsAnimating(false);
+    if (steps.length > 0 && steps[currentStepIndex] && onStepChange) {
+      const currentStep = steps[currentStepIndex];
+
+      const highlightedLines = algorithmLineResolver.getHighlightedLines(
+        BUBBLE_SORT_ALGORITHM_ID,
+        currentStep.stepType,
+        selectedLanguage,
+        currentStep.stepContext
+      );
+
+      onStepChange(highlightedLines);
+    }
+  }, [currentStepIndex, steps, selectedLanguage, onStepChange]);
+
+  // auto-play effect
+  useEffect(() => {
+    if (
+      !isAutoPlaying ||
+      steps.length === 0 ||
+      currentStepIndex >= steps.length - 1
+    ) {
       return;
     }
 
-    if (currentStepIndex >= steps.length - 1) {
-      setIsAnimating(false);
-      const lastStep = steps[steps.length - 1];
-      if (
-        lastStep &&
-        lastStep.highlightedIndices.length !== lastStep.arrayState.length &&
-        lastStep.arrayState.length > 0
-      ) {
-        const finalStep = {
-          ...lastStep,
-          highlightedIndices: lastStep.arrayState.map((_, i) => i),
-          explanation:
-            "Sort complete! All elements are in their final positions.",
-        };
-        if (
-          JSON.stringify(steps[steps.length - 1]) !== JSON.stringify(finalStep)
-        ) {
-          setSteps((prevSteps) => [...prevSteps.slice(0, -1), finalStep]);
-        }
-      }
-      return;
-    }
-
-    setIsAnimating(true);
     const timer = setTimeout(() => {
       setCurrentStepIndex((prev) => prev + 1);
     }, speed);
 
     return () => clearTimeout(timer);
-  }, [currentStepIndex, steps, speed]);
+  }, [currentStepIndex, steps, speed, isAutoPlaying]);
 
-  // loading state or if steps are not yet ready
+  // control functions
+  const goToPreviousStep = useCallback(() => {
+    setCurrentStepIndex((prev) => Math.max(0, prev - 1));
+    setIsAutoPlaying(false);
+  }, []);
+
+  const goToNextStep = useCallback(() => {
+    setCurrentStepIndex((prev) => Math.min(steps.length - 1, prev + 1));
+  }, [steps.length]);
+
+  const toggleAutoPlay = useCallback(() => {
+    if (currentStepIndex >= steps.length - 1) {
+      // if at the end restart from beginning
+      setCurrentStepIndex(0);
+      setIsAutoPlaying(true);
+    } else {
+      setIsAutoPlaying((prev) => !prev);
+    }
+  }, [currentStepIndex, steps.length]);
+
+  const resetAnimation = useCallback(() => {
+    setCurrentStepIndex(0);
+    setIsAutoPlaying(false);
+  }, []);
+
+  // loading
   if (steps.length === 0 || !steps[currentStepIndex]) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -158,6 +191,9 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
       ? Math.max(16, (estimatedContainerWidth - (numBars - 1) * gap) / numBars)
       : 16;
 
+  const isAtStart = currentStepIndex === 0;
+  const isAtEnd = currentStepIndex >= steps.length - 1;
+
   return (
     <div className="w-full max-w-6xl mx-auto">
       <motion.div
@@ -166,6 +202,7 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
+        {/* bg decorations */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div
             className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-[rgb(var(--color-primary-400)/0.3)] to-[rgb(var(--color-primary-600)/0.3)] rounded-full blur-3xl"
@@ -178,6 +215,8 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
             transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
           />
         </div>
+
+        {/* header */}
         <motion.div
           className="text-center mb-8 relative z-10"
           initial={{ opacity: 0, y: -20 }}
@@ -192,6 +231,117 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
           </p>
         </motion.div>
 
+        {/* controls */}
+        <motion.div
+          className="flex items-center justify-center gap-4 mb-8 relative z-10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+        >
+          {/* previous button */}
+          <div className="relative">
+            <motion.button
+              onClick={goToPreviousStep}
+              disabled={isAtStart}
+              onMouseEnter={() => setHoveredButton("previous")}
+              onMouseLeave={() => setHoveredButton(null)}
+              className="flex items-center justify-center w-12 h-12 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/15 transition-all duration-300"
+              whileHover={!isAtStart ? { scale: 1.05, y: -2 } : {}}
+              whileTap={!isAtStart ? { scale: 0.95 } : {}}
+            >
+              <SkipBack size={20} />
+            </motion.button>
+            {hoveredButton === "previous" && !isAtStart && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.8 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.8 }}
+                className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg border border-gray-700 whitespace-nowrap"
+              >
+                Previous Step
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+              </motion.div>
+            )}
+          </div>
+
+          {/* play/pause button */}
+          <div className="relative">
+            <motion.button
+              onClick={toggleAutoPlay}
+              onMouseEnter={() => setHoveredButton("play")}
+              onMouseLeave={() => setHoveredButton(null)}
+              className="flex items-center justify-center w-16 h-12 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white font-semibold hover:bg-white/15 transition-all duration-300"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {isAutoPlaying ? <Pause size={20} /> : <Play size={20} />}
+            </motion.button>
+            {hoveredButton === "play" && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.8 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.8 }}
+                className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg border border-gray-700 whitespace-nowrap"
+              >
+                {isAutoPlaying ? "Pause" : isAtEnd ? "Restart" : "Auto Play"}
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+              </motion.div>
+            )}
+          </div>
+
+          {/* next button */}
+          <div className="relative">
+            <motion.button
+              onClick={goToNextStep}
+              disabled={isAtEnd}
+              onMouseEnter={() => setHoveredButton("next")}
+              onMouseLeave={() => setHoveredButton(null)}
+              className="flex items-center justify-center w-12 h-12 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/15 transition-all duration-300"
+              whileHover={!isAtEnd ? { scale: 1.05, y: -2 } : {}}
+              whileTap={!isAtEnd ? { scale: 0.95 } : {}}
+            >
+              <SkipForward size={20} />
+            </motion.button>
+            {hoveredButton === "next" && !isAtEnd && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.8 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.8 }}
+                className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg border border-gray-700 whitespace-nowrap"
+              >
+                Next Step
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+              </motion.div>
+            )}
+          </div>
+
+          {/* reset button */}
+          <div className="relative">
+            <motion.button
+              onClick={resetAnimation}
+              onMouseEnter={() => setHoveredButton("reset")}
+              onMouseLeave={() => setHoveredButton(null)}
+              className="flex items-center justify-center w-12 h-12 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white font-semibold hover:bg-white/15 transition-all duration-300 ml-2"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <RotateCcw size={20} />
+            </motion.button>
+            {hoveredButton === "reset" && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.8 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.8 }}
+                className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg border border-gray-700 whitespace-nowrap"
+              >
+                Reset
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+              </motion.div>
+            )}
+          </div>
+        </motion.div>
+
+        {/* visualization */}
         <motion.div
           className="flex items-end justify-center gap-3 mb-8 h-80 relative z-10"
           variants={containerVariants}
@@ -220,12 +370,6 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
                   },
                 }}
                 custom={index}
-                // animate={{
-                //   // Overwrite or extend variant animations
-                //   y: isSwapping ? -15 : 0,
-                //   scale: isComparing || isSwapping ? 1.08 : 1.0,
-                //   zIndex: isSwapping ? 10 : isComparing ? 5 : 0,
-                // }}
                 transition={{
                   type: "spring",
                   stiffness: 350,
@@ -290,57 +434,47 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
           })}
         </motion.div>
 
-        <motion.div
-          className="backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl p-6 mb-6 relative z-10"
-          key={`step-info-${currentStepIndex}`}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
-        >
+        {/* step information */}
+        <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl p-6 mb-6 relative z-10">
           <div className="flex justify-between items-center mb-4">
             <motion.span
               className="text-sm font-bold text-gray-200 px-3 py-1 bg-white/20 rounded-full"
-              key={`step-counter-${currentStepIndex}`}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.2 }}
             >
               Step {currentStepIndex + 1} of {steps.length}
             </motion.span>
             <motion.div
               className="flex items-center gap-2"
-              animate={{ opacity: isAnimating ? [1, 0.6, 1] : 1 }}
-              transition={{ duration: 1, repeat: isAnimating ? Infinity : 0 }}
+              animate={{ opacity: isAutoPlaying ? [1, 0.6, 1] : 1 }}
+              transition={{ duration: 1, repeat: isAutoPlaying ? Infinity : 0 }}
             >
               <div
                 className={`w-2 h-2 rounded-full ${
-                  isAnimating ? "bg-green-400" : "bg-gray-400"
+                  isAutoPlaying ? "bg-green-400" : "bg-gray-400"
                 }`}
               />
               <span className="text-sm text-gray-200 font-medium">
-                {isAnimating
-                  ? "Animating"
-                  : currentStepIndex >= steps.length - 1 && steps.length > 0
+                {isAutoPlaying
+                  ? "Auto-playing"
+                  : isAtEnd && steps.length > 0
                   ? "Completed"
-                  : "Paused"}
+                  : "Manual"}
               </span>
             </motion.div>
           </div>
           <motion.p
             className="text-gray-100 mb-4 text-lg font-medium leading-relaxed min-h-[3em]"
-            key={`explanation-${currentStepIndex}`}
-            initial={{ opacity: 0, x: -15 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
+            transition={{ duration: 0.3 }}
           >
             {currentStep?.explanation || "Processing..."}
           </motion.p>
           {currentStep.variables && (
             <motion.div
               className="flex flex-wrap gap-4 text-sm"
-              key={`variables-${currentStepIndex}`}
-              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+              transition={{ duration: 0.2 }}
             >
               <div className="flex items-center gap-2 px-3 py-2 bg-blue-500/20 rounded-xl border border-blue-400/30">
                 <div className="w-2 h-2 bg-blue-400 rounded-full" />
@@ -351,15 +485,22 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
               <div className="flex items-center gap-2 px-3 py-2 bg-emerald-500/20 rounded-xl border border-emerald-400/30">
                 <div className="w-2 h-2 bg-emerald-400 rounded-full" />
                 <span className="text-emerald-200 font-semibold">
-                  Swaps in pass:{" "}
-                  {currentStep.variables.swapsInPass ||
-                    currentStep.variables.swaps ||
-                    0}
+                  Total Swaps: {currentStep.variables.swaps || 0}
                 </span>
               </div>
+              {currentStep.variables.swapsInPass !== undefined && (
+                <div className="flex items-center gap-2 px-3 py-2 bg-purple-500/20 rounded-xl border border-purple-400/30">
+                  <div className="w-2 h-2 bg-purple-400 rounded-full" />
+                  <span className="text-purple-200 font-semibold">
+                    Swaps in Pass: {currentStep.variables.swapsInPass}
+                  </span>
+                </div>
+              )}
             </motion.div>
           )}
-        </motion.div>
+        </div>
+
+        {/* legend */}
         <motion.div
           className="flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm relative z-10"
           initial={{ opacity: 0, y: 20 }}
