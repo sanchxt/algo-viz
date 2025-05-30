@@ -13,7 +13,7 @@ import {
 interface BubbleSortVisualizerProps {
   initialArray?: number[];
   speed?: number;
-  onStepChange?: (highlightedLines: number[]) => void;
+  onStepChange?: (highlightedLines: number[], stepData?: AlgorithmStep) => void;
   selectedLanguage?: Language;
 }
 
@@ -69,7 +69,7 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
         currentStep.stepContext
       );
 
-      onStepChange(highlightedLines);
+      onStepChange(highlightedLines, currentStep);
     }
   }, [currentStepIndex, steps, selectedLanguage, onStepChange]);
 

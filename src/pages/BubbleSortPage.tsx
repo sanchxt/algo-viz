@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Eye } from "lucide-react";
 
-import type { Language } from "../types/algorithm";
+import type { Language, AlgorithmStep } from "../types/algorithm";
 import CodeDisplay from "../components/CodeDisplay";
 import { bubbleSortCodes } from "../constants/bubbleSortCode";
 import BubbleSortVisualizer from "../components/animation/BubbleSortVisualizer";
@@ -23,6 +24,20 @@ const BubbleSortPage = () => {
   const [currentHighlightedLines, setCurrentHighlightedLines] = useState<
     number[]
   >([]);
+  const [showVariableViewer, setShowVariableViewer] = useState(false);
+  const [currentStep, setCurrentStep] = useState<AlgorithmStep | undefined>();
+  const [previousStep, setPreviousStep] = useState<AlgorithmStep | undefined>();
+
+  const handleStepChange = (
+    highlightedLines: number[],
+    stepData?: AlgorithmStep
+  ) => {
+    setCurrentHighlightedLines(highlightedLines);
+    if (stepData) {
+      setPreviousStep(currentStep);
+      setCurrentStep(stepData);
+    }
+  };
 
   return (
     <>
@@ -88,17 +103,51 @@ const BubbleSortPage = () => {
         transition={{ delay: 0.6, duration: 0.8 }}
       >
         <BubbleSortVisualizer
-          onStepChange={setCurrentHighlightedLines}
+          onStepChange={handleStepChange}
           selectedLanguage={selectedLanguage}
         />
       </motion.main>
+
+      {/* variable viewer toggle */}
+      <motion.div
+        className="mt-12 flex justify-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, duration: 0.6 }}
+      >
+        <motion.button
+          onClick={() => setShowVariableViewer(!showVariableViewer)}
+          className={`flex items-center gap-3 px-6 py-3 backdrop-blur-xl border rounded-2xl font-semibold transition-all duration-300 ${
+            showVariableViewer
+              ? "bg-emerald-500/20 border-emerald-400/30 text-emerald-200 hover:bg-emerald-500/25"
+              : "bg-white/10 border-white/20 text-white hover:bg-white/15"
+          }`}
+          whileHover={{ scale: 1.02, y: -2 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <motion.div
+            animate={{ rotate: showVariableViewer ? 360 : 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Eye size={20} />
+          </motion.div>
+          <span>{showVariableViewer ? "Hide" : "Show"} Variable Inspector</span>
+          {showVariableViewer && (
+            <motion.div
+              className="w-2 h-2 bg-emerald-400 rounded-full"
+              animate={{ scale: [1, 1.3, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+          )}
+        </motion.button>
+      </motion.div>
 
       {/* code display section */}
       <motion.section
         className="mt-16 max-w-4xl mx-auto"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8, duration: 0.8 }}
+        transition={{ delay: 1, duration: 0.8 }}
       >
         <CodeDisplay
           title="Bubble Sort Implementation"
@@ -109,6 +158,10 @@ const BubbleSortPage = () => {
           onLanguageChange={setSelectedLanguage}
           availableLanguages={Object.keys(languageLabels) as Language[]}
           languageLabels={languageLabels}
+          showVariableViewer={showVariableViewer}
+          onCloseVariableViewer={() => setShowVariableViewer(false)}
+          currentStep={currentStep}
+          previousStep={previousStep}
         />
       </motion.section>
 
@@ -117,7 +170,7 @@ const BubbleSortPage = () => {
         className="mt-16 max-w-4xl mx-auto"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1, duration: 0.8 }}
+        transition={{ delay: 1.2, duration: 0.8 }}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6">
