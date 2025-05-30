@@ -40,7 +40,14 @@ export interface Algorithm {
   description: string;
 }
 
-export type Language = "javascript" | "cpp";
+export type Language =
+  | "javascript"
+  | "cpp"
+  | "python"
+  | "java"
+  | "rust"
+  | "typescript"
+  | "go";
 
 export interface LineRange {
   start: number;

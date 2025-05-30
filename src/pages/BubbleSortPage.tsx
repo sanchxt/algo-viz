@@ -8,8 +8,13 @@ import { bubbleSortCodes } from "../constants/bubbleSortCode";
 import BubbleSortVisualizer from "../components/animation/BubbleSortVisualizer";
 
 const languageLabels: Record<Language, string> = {
-  javascript: "JavaScript",
   cpp: "C++",
+  python: "Python",
+  java: "Java",
+  rust: "Rust",
+  javascript: "JavaScript",
+  typescript: "TypeScript",
+  go: "Go",
 };
 
 const BubbleSortPage = () => {
