@@ -141,20 +141,9 @@ const CodeDisplay = ({
               {/* header */}
               <div className="flex items-center justify-between p-6 border-b border-white/10">
                 <div className="flex items-center gap-3">
-                  <motion.div
-                    className="p-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-xl border border-amber-400/30"
-                    animate={{
-                      scale: [1, 1.05, 1],
-                      rotate: [0, 5, -5, 0],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                  >
+                  <button className="p-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-xl border border-amber-400/30">
                     <Lightbulb size={20} className="text-amber-400" />
-                  </motion.div>
+                  </button>
                   <div>
                     <h3 className="text-xl font-semibold text-white">
                       Algorithm Intuition
@@ -165,14 +154,12 @@ const CodeDisplay = ({
                   </div>
                 </div>
 
-                <motion.button
+                <button
                   onClick={() => setShowIntuition(false)}
-                  className="flex items-center justify-center w-10 h-10 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/15 transition-all duration-300"
-                  whileHover={{ scale: 1.05, rotate: 90 }}
-                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center justify-center w-10 h-10 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/15 transition-all duration-300 hover:scale-105"
                 >
                   <X size={18} />
-                </motion.button>
+                </button>
               </div>
 
               {/* content */}
@@ -454,79 +441,58 @@ const CodeDisplay = ({
           <div className="hidden sm:flex items-center gap-3">
             {/* "Show Intuition" button */}
             {intuitionData && (
-              <motion.button
+              <button
                 onClick={() => setShowIntuition(true)}
-                className="flex items-center gap-2 px-3 py-2 backdrop-blur-md bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-400/30 rounded-xl text-amber-200 hover:from-amber-500/25 hover:to-orange-500/25 transition-all duration-300 font-medium"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                className="flex items-center gap-2 px-3 py-2 backdrop-blur-md bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-400/30 rounded-xl text-amber-200 hover:from-amber-500/25 hover:to-orange-500/25 transition-all duration-300 font-medium hover:scale-105 active:scale-95"
                 title="Show Algorithm Intuition"
               >
-                <motion.div
-                  animate={{
-                    rotate: [0, 5, -5, 0],
-                    scale: [1, 1.05, 1],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                >
-                  <Lightbulb size={16} />
-                </motion.div>
+                <Lightbulb size={16} />
                 <span className="text-sm">Show Intuition</span>
-              </motion.button>
+              </button>
             )}
 
             {/* variable inspector toggle */}
             {onToggleVariableViewer && (
-              <motion.button
+              <button
                 onClick={onToggleVariableViewer}
-                className={`flex items-center gap-2 px-3 py-2 backdrop-blur-md border rounded-xl font-medium transition-all duration-300 ${
+                className={`flex items-center gap-2 px-3 py-2 backdrop-blur-md border rounded-xl font-medium transition-all duration-300 hover:scale-105 active:scale-95 ${
                   showVariableViewer
                     ? "bg-emerald-500/20 border-emerald-400/30 text-emerald-200 hover:bg-emerald-500/25"
                     : "bg-white/10 border-white/20 text-white hover:bg-white/15"
                 }`}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
                 title={
                   showVariableViewer
                     ? "Hide Variable Inspector"
                     : "Show Variable Inspector"
                 }
               >
-                <motion.div
-                  animate={{ rotate: showVariableViewer ? 360 : 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <Eye size={16} />
-                </motion.div>
+                <Eye size={16} />
                 <span className="text-sm">
                   {showVariableViewer ? "Hide" : "Show"} Inspector
                 </span>
-              </motion.button>
+              </button>
             )}
 
             {/* language selector */}
             {availableLanguages.length > 1 ? (
               <div className="relative">
-                <motion.button
+                <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center gap-2 px-4 py-2 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/15 transition-all duration-300 font-medium"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  className="flex items-center gap-2 px-4 py-2 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/15 transition-all duration-300 font-medium hover:scale-105 active:scale-95"
                 >
-                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <div className="w-2 h-2 bg-blue-400 rounded-full" />
                   <span className="text-sm capitalize">
                     {languageLabels[currentLanguage] || currentLanguage}
                   </span>
-                  <motion.div
-                    animate={{ rotate: isDropdownOpen ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <ChevronDown size={16} />
-                  </motion.div>
-                </motion.button>
+                  <div>
+                    <ChevronDown
+                      size={16}
+                      className={`${
+                        isDropdownOpen ? "rotate-180" : "rotate-0"
+                      } transition-all duration-300 ease-in-out`}
+                    />
+                  </div>
+                </button>
 
                 <AnimatePresence>
                   {isDropdownOpen && (
@@ -538,23 +504,17 @@ const CodeDisplay = ({
                       className="absolute right-0 top-full mt-2 min-w-[140px] backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl shadow-2xl z-50 overflow-hidden"
                     >
                       {availableLanguages.map((lang) => (
-                        <motion.button
+                        <button
                           key={lang}
                           onClick={() => handleLanguageSelect(lang as Language)}
-                          className={`w-full text-left px-4 py-3 text-sm transition-all duration-200 flex items-center gap-3 ${
+                          className={`w-full text-left px-4 py-3 text-sm transition-all duration-200 flex items-center gap-3 hover:scale-[1.02] ${
                             lang === currentLanguage
                               ? "bg-blue-500/20 text-blue-200 border-l-2 border-blue-400"
                               : "text-gray-300 hover:bg-white/10 hover:text-white"
                           }`}
-                          whileHover={{
-                            backgroundColor:
-                              lang === currentLanguage
-                                ? undefined
-                                : "rgba(255, 255, 255, 0.1)",
-                          }}
                         >
                           <div
-                            className={`w-2 h-2 rounded-full ${
+                            className={`w-2 h-2 rounded-full transition-colors duration-200 ${
                               lang === currentLanguage
                                 ? "bg-blue-400"
                                 : "bg-gray-500"
@@ -565,15 +525,11 @@ const CodeDisplay = ({
                               lang.charAt(0).toUpperCase() + lang.slice(1)}
                           </span>
                           {lang === currentLanguage && (
-                            <motion.div
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              className="ml-auto text-blue-400"
-                            >
+                            <span className="ml-auto text-blue-400 animate-in zoom-in duration-200">
                               ✓
-                            </motion.div>
+                            </span>
                           )}
-                        </motion.button>
+                        </button>
                       ))}
                     </motion.div>
                   )}
@@ -605,61 +561,62 @@ const CodeDisplay = ({
         }`}
       >
         {/* code panel */}
-        <motion.div
+        <div
           className={`relative ${
             showVariableViewer ? "border-r border-white/10" : ""
-          }`}
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-          key={currentLanguage}
+          } transition-opacity duration-300`}
         >
           <div className="p-6" style={{ height: "auto", minHeight: "500px" }}>
-            <SyntaxHighlighter
-              language={currentLanguage}
-              style={customStyle}
-              showLineNumbers={true}
-              lineNumberStyle={{
-                color: "rgba(156, 163, 175, 0.5)",
-                fontSize: "12px",
-                minWidth: "2.5em",
-                paddingRight: "1em",
-              }}
-              wrapLines={true}
-              lineProps={(lineNumber) => {
-                const isHighlighted = highlightedLines.includes(lineNumber);
-                const isPrimary =
-                  highlightedLines.length > 0 &&
-                  highlightedLines[0] === lineNumber;
-
-                return {
-                  style: {
-                    display: "block",
-                    backgroundColor: isHighlighted
-                      ? isPrimary
-                        ? "rgba(59, 130, 246, 0.3)"
-                        : "rgba(59, 130, 246, 0.15)"
-                      : "transparent",
-                    borderLeft: isHighlighted
-                      ? isPrimary
-                        ? "4px solid rgb(59, 130, 246)"
-                        : "3px solid rgba(59, 130, 246, 0.7)"
-                      : "3px solid transparent",
-                    paddingLeft: "0.5rem",
-                    paddingRight: "2rem",
-                    transition: "all 0.3s ease",
-                    marginLeft: isHighlighted ? "2px" : "0px",
-                    minWidth: "100%",
-                    width: "max-content",
-                    boxSizing: "border-box",
-                  },
-                };
-              }}
+            <div
+              className="transition-opacity duration-200"
+              key={currentLanguage}
             >
-              {code}
-            </SyntaxHighlighter>
+              <SyntaxHighlighter
+                language={currentLanguage}
+                style={customStyle}
+                showLineNumbers={true}
+                lineNumberStyle={{
+                  color: "rgba(156, 163, 175, 0.5)",
+                  fontSize: "12px",
+                  minWidth: "2.5em",
+                  paddingRight: "1em",
+                }}
+                wrapLines={true}
+                lineProps={(lineNumber) => {
+                  const isHighlighted = highlightedLines.includes(lineNumber);
+                  const isPrimary =
+                    highlightedLines.length > 0 &&
+                    highlightedLines[0] === lineNumber;
+
+                  return {
+                    style: {
+                      display: "block",
+                      backgroundColor: isHighlighted
+                        ? isPrimary
+                          ? "rgba(59, 130, 246, 0.3)"
+                          : "rgba(59, 130, 246, 0.15)"
+                        : "transparent",
+                      borderLeft: isHighlighted
+                        ? isPrimary
+                          ? "4px solid rgb(59, 130, 246)"
+                          : "3px solid rgba(59, 130, 246, 0.7)"
+                        : "3px solid transparent",
+                      paddingLeft: "0.5rem",
+                      paddingRight: "2rem",
+                      transition: "all 0.3s ease",
+                      marginLeft: isHighlighted ? "2px" : "0px",
+                      minWidth: "100%",
+                      width: "max-content",
+                      boxSizing: "border-box",
+                    },
+                  };
+                }}
+              >
+                {code}
+              </SyntaxHighlighter>
+            </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* variable inspector panel */}
         <VariableInspector

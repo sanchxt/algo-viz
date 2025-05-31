@@ -36,7 +36,6 @@ const VariableInspector = ({
     }));
   };
 
-  // Helper functions
   const variables = currentStep?.variables || {};
   const previousVariables = previousStep?.variables || {};
 
@@ -58,7 +57,7 @@ const VariableInspector = ({
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Mobile Overlay */}
+          {/* mobile overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -67,7 +66,7 @@ const VariableInspector = ({
             onClick={onClose}
           />
 
-          {/* Variable Inspector Content */}
+          {/* variable inspector content */}
           <motion.div
             initial={{
               opacity: 0,
@@ -94,23 +93,21 @@ const VariableInspector = ({
               fixed top-4 left-4 right-4 bottom-4 z-50 bg-slate-900/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden
             `}
           >
-            {/* Mobile Close Button */}
+            {/* mobile close button */}
             <div className="lg:hidden flex items-center justify-between p-4 border-b border-white/10">
               <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                 <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
                 Variable Inspector
               </h3>
-              <motion.button
+              <button
                 onClick={onClose}
-                className="flex items-center justify-center w-8 h-8 backdrop-blur-md bg-white/10 border border-white/20 rounded-lg text-white hover:bg-white/15 transition-all duration-300"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="flex items-center justify-center w-8 h-8 backdrop-blur-md bg-white/10 border border-white/20 rounded-lg text-white hover:bg-white/15 transition-all duration-300 hover:scale-105 active:scale-95"
               >
                 <X size={16} />
-              </motion.button>
+              </button>
             </div>
 
-            {/* Desktop Header */}
+            {/* desktop header */}
             <div className="hidden lg:flex items-center justify-between p-6 border-b border-white/10">
               <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                 <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
@@ -126,51 +123,44 @@ const VariableInspector = ({
               )}
             </div>
 
-            {/* Content */}
+            {/* content */}
             <div className="p-6 overflow-y-auto" style={{ height: "500px" }}>
               {currentStep ? (
                 <div className="space-y-6">
-                  {/* Variables Section */}
+                  {/* variables section */}
                   <div>
-                    <motion.button
+                    <button
                       onClick={() => toggleSection("variables")}
-                      className="flex items-center justify-between w-full mb-4 p-3 backdrop-blur-md bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all duration-300"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      className="flex items-center justify-between w-full mb-4 p-3 backdrop-blur-md bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all duration-300 hover:scale-[1.02] active:scale-95"
                     >
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
                         <span className="font-semibold">Variables</span>
                         {Object.keys(variables).some(hasVariableChanged) && (
-                          <motion.div
-                            className="w-2 h-2 bg-yellow-400 rounded-full"
-                            animate={{ scale: [1, 1.3, 1] }}
-                            transition={{ duration: 1, repeat: Infinity }}
-                          />
+                          <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
                         )}
                       </div>
-                      <motion.div
-                        animate={{
-                          rotate: expandedSections.variables ? 180 : 0,
-                        }}
-                        transition={{ duration: 0.2 }}
+                      <div
+                        className={`${
+                          expandedSections.variables ? "rotate-180" : "rotate-0"
+                        } transition-transform duration-200`}
                       >
                         {expandedSections.variables ? (
                           <EyeOff size={16} />
                         ) : (
                           <Eye size={16} />
                         )}
-                      </motion.div>
-                    </motion.button>
+                      </div>
+                    </button>
 
-                    {expandedSections.variables && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="space-y-3"
-                      >
+                    <div
+                      className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                        expandedSections.variables
+                          ? "max-h-96 opacity-100"
+                          : "max-h-0 opacity-0"
+                      }`}
+                    >
+                      <div className="space-y-3">
                         {Object.entries(variables).map(([key, value]) => {
                           const isChanged = hasVariableChanged(key);
                           return (
@@ -186,7 +176,7 @@ const VariableInspector = ({
                             >
                               <div className="flex items-center gap-2">
                                 <div
-                                  className={`w-2 h-2 rounded-full ${
+                                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${
                                     isChanged ? "bg-yellow-400" : "bg-gray-500"
                                   }`}
                                 />
@@ -195,7 +185,7 @@ const VariableInspector = ({
                                 </span>
                               </div>
                               <motion.span
-                                className={`font-mono font-semibold ${
+                                className={`font-mono font-semibold transition-colors duration-200 ${
                                   isChanged ? "text-yellow-200" : "text-white"
                                 }`}
                                 animate={
@@ -208,49 +198,44 @@ const VariableInspector = ({
                             </motion.div>
                           );
                         })}
-                      </motion.div>
-                    )}
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Array Section */}
+                  {/* array section */}
                   <div>
-                    <motion.button
+                    <button
                       onClick={() => toggleSection("array")}
-                      className="flex items-center justify-between w-full mb-4 p-3 backdrop-blur-md bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all duration-300"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      className="flex items-center justify-between w-full mb-4 p-3 backdrop-blur-md bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all duration-300 hover:scale-[1.02] active:scale-95"
                     >
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
                         <span className="font-semibold">Array State</span>
                         {hasArrayChanged() && (
-                          <motion.div
-                            className="w-2 h-2 bg-yellow-400 rounded-full"
-                            animate={{ scale: [1, 1.3, 1] }}
-                            transition={{ duration: 1, repeat: Infinity }}
-                          />
+                          <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
                         )}
                       </div>
-                      <motion.div
-                        animate={{
-                          rotate: expandedSections.array ? 180 : 0,
-                        }}
-                        transition={{ duration: 0.2 }}
+                      <div
+                        className={`${
+                          expandedSections.array ? "rotate-180" : "rotate-0"
+                        } transition-transform duration-200`}
                       >
                         {expandedSections.array ? (
                           <EyeOff size={16} />
                         ) : (
                           <Eye size={16} />
                         )}
-                      </motion.div>
-                    </motion.button>
+                      </div>
+                    </button>
 
-                    {expandedSections.array && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3 }}
+                    <div
+                      className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                        expandedSections.array
+                          ? "max-h-[500px] opacity-100"
+                          : "max-h-0 opacity-0"
+                      }`}
+                    >
+                      <div
                         className={`p-4 rounded-xl border transition-all duration-300 ${
                           hasArrayChanged()
                             ? "bg-purple-500/20 border-purple-400/30 shadow-lg shadow-purple-400/10"
@@ -262,19 +247,14 @@ const VariableInspector = ({
                             Length: {currentStep.arrayState.length}
                           </span>
                           {hasArrayChanged() && (
-                            <motion.span
-                              className="text-yellow-200 text-xs px-2 py-1 bg-yellow-500/20 rounded-lg border border-yellow-400/30"
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              transition={{ delay: 0.2 }}
-                            >
+                            <span className="text-yellow-200 text-xs px-2 py-1 bg-yellow-500/20 rounded-lg border border-yellow-400/30 animate-in zoom-in duration-200">
                               Modified
-                            </motion.span>
+                            </span>
                           )}
                         </div>
 
                         <div className="grid grid-cols-1 gap-2">
-                          {/* Array indices */}
+                          {/* array indices */}
                           <div className="flex gap-1 mb-1 overflow-x-auto">
                             {currentStep.arrayState.map((_, index) => (
                               <div
@@ -286,7 +266,7 @@ const VariableInspector = ({
                             ))}
                           </div>
 
-                          {/* Array values */}
+                          {/* array values */}
                           <div className="flex gap-1 overflow-x-auto pb-2">
                             {currentStep.arrayState.map((value, index) => {
                               const isHighlighted =
@@ -315,26 +295,22 @@ const VariableInspector = ({
                               }
 
                               return (
-                                <motion.div
+                                <div
                                   key={`value-${index}-${value}`}
-                                  className={`min-w-[40px] flex-shrink-0 text-center font-mono font-semibold text-sm py-2 px-1 rounded-lg border ${bgColor} ${textColor} ${borderColor}`}
-                                  animate={
-                                    isSwapping || isComparing
-                                      ? { scale: [1, 1.1, 1] }
-                                      : isHighlighted
-                                      ? { scale: [1, 1.05, 1] }
-                                      : {}
-                                  }
-                                  transition={{ duration: 0.3 }}
+                                  className={`min-w-[40px] flex-shrink-0 text-center font-mono font-semibold text-sm py-2 px-1 rounded-lg border transition-all duration-200 ${bgColor} ${textColor} ${borderColor} ${
+                                    isSwapping || isComparing || isHighlighted
+                                      ? "scale-105"
+                                      : "scale-100"
+                                  } transition-all duration-150`}
                                 >
                                   {value}
-                                </motion.div>
+                                </div>
                               );
                             })}
                           </div>
                         </div>
 
-                        {/* Array status indicators */}
+                        {/* array status indicators */}
                         <div className="flex flex-wrap gap-2 mt-4 text-xs">
                           {currentStep.compareIndices &&
                             currentStep.compareIndices.length > 0 && (
@@ -366,20 +342,16 @@ const VariableInspector = ({
                               </div>
                             )}
                         </div>
-                      </motion.div>
-                    )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               ) : (
                 <div className="flex items-center justify-center h-64">
-                  <motion.div
-                    className="text-gray-400 text-center"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                  >
+                  <div className="text-gray-400 text-center">
                     <Eye size={48} className="mx-auto mb-4 opacity-50" />
                     <p>No step data available</p>
-                  </motion.div>
+                  </div>
                 </div>
               )}
             </div>

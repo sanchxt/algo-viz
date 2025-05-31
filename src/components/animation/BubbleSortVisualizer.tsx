@@ -240,103 +240,75 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
         >
           {/* previous button */}
           <div className="relative">
-            <motion.button
+            <button
               onClick={goToPreviousStep}
               disabled={isAtStart}
               onMouseEnter={() => setHoveredButton("previous")}
               onMouseLeave={() => setHoveredButton(null)}
-              className="flex items-center justify-center w-12 h-12 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/15 transition-all duration-300"
-              whileHover={!isAtStart ? { scale: 1.05, y: -2 } : {}}
-              whileTap={!isAtStart ? { scale: 0.95 } : {}}
+              className="flex items-center justify-center w-12 h-12 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/15 hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
             >
               <SkipBack size={20} />
-            </motion.button>
+            </button>
             {hoveredButton === "previous" && !isAtStart && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.8 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.8 }}
-                className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg border border-gray-700 whitespace-nowrap"
-              >
+              <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg border border-gray-700 whitespace-nowrap animate-in fade-in slide-in-from-bottom-2 duration-200">
                 Previous Step
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-              </motion.div>
+              </div>
             )}
           </div>
 
           {/* play/pause button */}
           <div className="relative">
-            <motion.button
+            <button
               onClick={toggleAutoPlay}
               onMouseEnter={() => setHoveredButton("play")}
               onMouseLeave={() => setHoveredButton(null)}
-              className="flex items-center justify-center w-16 h-12 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white font-semibold hover:bg-white/15 transition-all duration-300"
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
+              className="flex items-center justify-center w-16 h-12 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white font-semibold hover:bg-white/15 hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
             >
               {isAutoPlaying ? <Pause size={20} /> : <Play size={20} />}
-            </motion.button>
+            </button>
             {hoveredButton === "play" && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.8 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.8 }}
-                className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg border border-gray-700 whitespace-nowrap"
-              >
+              <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg border border-gray-700 whitespace-nowrap animate-in fade-in slide-in-from-bottom-2 duration-200">
                 {isAutoPlaying ? "Pause" : isAtEnd ? "Restart" : "Auto Play"}
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-              </motion.div>
+              </div>
             )}
           </div>
 
           {/* next button */}
           <div className="relative">
-            <motion.button
+            <button
               onClick={goToNextStep}
               disabled={isAtEnd}
               onMouseEnter={() => setHoveredButton("next")}
               onMouseLeave={() => setHoveredButton(null)}
-              className="flex items-center justify-center w-12 h-12 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/15 transition-all duration-300"
-              whileHover={!isAtEnd ? { scale: 1.05, y: -2 } : {}}
-              whileTap={!isAtEnd ? { scale: 0.95 } : {}}
+              className="flex items-center justify-center w-12 h-12 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/15 hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
             >
               <SkipForward size={20} />
-            </motion.button>
+            </button>
             {hoveredButton === "next" && !isAtEnd && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.8 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.8 }}
-                className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg border border-gray-700 whitespace-nowrap"
-              >
+              <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg border border-gray-700 whitespace-nowrap animate-in fade-in slide-in-from-bottom-2 duration-200">
                 Next Step
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-              </motion.div>
+              </div>
             )}
           </div>
 
           {/* reset button */}
           <div className="relative">
-            <motion.button
+            <button
               onClick={resetAnimation}
               onMouseEnter={() => setHoveredButton("reset")}
               onMouseLeave={() => setHoveredButton(null)}
-              className="flex items-center justify-center w-12 h-12 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white font-semibold hover:bg-white/15 transition-all duration-300 ml-2"
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
+              className="flex items-center justify-center w-12 h-12 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white font-semibold hover:bg-white/15 hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 ml-2"
             >
               <RotateCcw size={20} />
-            </motion.button>
+            </button>
             {hoveredButton === "reset" && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.8 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.8 }}
-                className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg border border-gray-700 whitespace-nowrap"
-              >
+              <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg border border-gray-700 whitespace-nowrap animate-in fade-in slide-in-from-bottom-2 duration-200">
                 Reset
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-              </motion.div>
+              </div>
             )}
           </div>
         </motion.div>
@@ -378,12 +350,6 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
                     delay: isSwapping || isComparing ? 0 : speed / 2000,
                     duration: 0.01,
                   },
-                }}
-                whileHover={{
-                  scale: 1.12,
-                  y: -8,
-                  zIndex: 20,
-                  transition: { type: "spring", stiffness: 400, damping: 10 },
                 }}
                 className="relative group"
               >

@@ -96,8 +96,7 @@ const BubbleSortPage = () => {
           transition={{ delay: 0.3, duration: 0.6 }}
         >
           Watch how Bubble Sort compares adjacent elements and swaps them to
-          gradually move larger elements to the end of the array. Now with
-          custom array input!
+          gradually move larger elements to the end of the array.
         </motion.p>
       </motion.header>
 
@@ -110,7 +109,6 @@ const BubbleSortPage = () => {
         <BubbleSortVisualizer
           onStepChange={handleStepChange}
           selectedLanguage={selectedLanguage}
-          initialArray={[64, 34, 25]} // Default array
         />
       </motion.main>
 
