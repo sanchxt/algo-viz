@@ -60,3 +60,21 @@ export interface AlgorithmLineMapping {
     [language: string]: number[] | LineRange;
   };
 }
+
+export interface AlgorithmIntuition {
+  title: string;
+  description: string;
+  intuition: {
+    title: string;
+    content: string[];
+  };
+  whenToUse: {
+    title: string;
+    content: string[];
+    examples: string[];
+  };
+  realWorldAnalogy: {
+    title: string;
+    content: string;
+  };
+}

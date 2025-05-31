@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import type { Language, AlgorithmStep } from "../types/algorithm";
 import CodeDisplay from "../components/CodeDisplay";
 import { bubbleSortCodes } from "../constants/bubbleSortCode";
+import { bubbleSortIntuition } from "../constants/bubbleSortIntuition";
 import BubbleSortVisualizer from "../components/animation/BubbleSortVisualizer";
 
 const languageLabels: Record<Language, string> = {
@@ -95,7 +96,8 @@ const BubbleSortPage = () => {
           transition={{ delay: 0.3, duration: 0.6 }}
         >
           Watch how Bubble Sort compares adjacent elements and swaps them to
-          gradually move larger elements to the end of the array.
+          gradually move larger elements to the end of the array. Now with
+          custom array input!
         </motion.p>
       </motion.header>
 
@@ -108,6 +110,7 @@ const BubbleSortPage = () => {
         <BubbleSortVisualizer
           onStepChange={handleStepChange}
           selectedLanguage={selectedLanguage}
+          initialArray={[64, 34, 25]} // Default array
         />
       </motion.main>
 
@@ -131,6 +134,7 @@ const BubbleSortPage = () => {
           onToggleVariableViewer={toggleVariableViewer}
           currentStep={currentStep}
           previousStep={previousStep}
+          intuitionData={bubbleSortIntuition}
         />
       </motion.section>
 
