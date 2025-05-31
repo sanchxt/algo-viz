@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 
 import type { Language, AlgorithmStep } from "../types/algorithm";
 import CodeDisplay from "../components/CodeDisplay";
+import ArrayInputModal from "../components/ArrayInputModal";
+import ArrayCustomizer from "../components/ArrayCustomizer";
 import { bubbleSortCodes } from "../constants/bubbleSortCode";
 import { bubbleSortIntuition } from "../constants/bubbleSortIntuition";
 import BubbleSortVisualizer from "../components/animation/BubbleSortVisualizer";
@@ -28,6 +30,10 @@ const BubbleSortPage = () => {
   const [currentStep, setCurrentStep] = useState<AlgorithmStep | undefined>();
   const [previousStep, setPreviousStep] = useState<AlgorithmStep | undefined>();
 
+  // array customization state
+  const [currentArray, setCurrentArray] = useState<number[]>([64, 34, 25]);
+  const [showArrayModal, setShowArrayModal] = useState(false);
+
   const handleStepChange = (
     highlightedLines: number[],
     stepData?: AlgorithmStep
@@ -43,8 +49,24 @@ const BubbleSortPage = () => {
     setShowVariableViewer(!showVariableViewer);
   };
 
+  const handleArrayUpdate = (newArray: number[]) => {
+    setCurrentArray(newArray);
+  };
+
+  const handleOpenArrayModal = () => {
+    setShowArrayModal(true);
+  };
+
   return (
     <>
+      {/* array Input Modal */}
+      <ArrayInputModal
+        isOpen={showArrayModal}
+        onClose={() => setShowArrayModal(false)}
+        onApplyArray={handleArrayUpdate}
+        currentArray={currentArray}
+      />
+
       {/* navigation */}
       <motion.nav
         className="mb-8"
@@ -100,6 +122,12 @@ const BubbleSortPage = () => {
         </motion.p>
       </motion.header>
 
+      {/* array Customization section */}
+      <ArrayCustomizer
+        currentArray={currentArray}
+        onOpenModal={handleOpenArrayModal}
+      />
+
       {/* algorithm visualization */}
       <motion.main
         initial={{ opacity: 0, y: 30 }}
@@ -107,6 +135,7 @@ const BubbleSortPage = () => {
         transition={{ delay: 0.6, duration: 0.8 }}
       >
         <BubbleSortVisualizer
+          initialArray={currentArray}
           onStepChange={handleStepChange}
           selectedLanguage={selectedLanguage}
         />
@@ -114,7 +143,7 @@ const BubbleSortPage = () => {
 
       {/* code display section */}
       <motion.section
-        className="mt-16 max-w-4xl mx-auto"
+        className="mt-16 max-w-6xl mx-auto"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1, duration: 0.8 }}
@@ -138,7 +167,7 @@ const BubbleSortPage = () => {
 
       {/* algorithm info */}
       <motion.section
-        className="mt-16 max-w-4xl mx-auto"
+        className="mt-16 max-w-6xl mx-auto"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.2, duration: 0.8 }}
