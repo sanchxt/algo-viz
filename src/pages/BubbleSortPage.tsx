@@ -59,7 +59,7 @@ const BubbleSortPage = () => {
 
   return (
     <>
-      {/* array Input Modal */}
+      {/* array input modal */}
       <ArrayInputModal
         isOpen={showArrayModal}
         onClose={() => setShowArrayModal(false)}
@@ -76,7 +76,7 @@ const BubbleSortPage = () => {
       >
         <Link
           to="/"
-          className="inline-flex items-center gap-2 px-4 py-2 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/15 transition-all duration-300 font-medium"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white hover:bg-white/15 transition-all duration-300 font-medium text-sm"
         >
           <motion.span
             whileHover={{ x: -4 }}
@@ -112,7 +112,7 @@ const BubbleSortPage = () => {
           Bubble Sort
         </motion.h1>
         <motion.p
-          className="text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed"
+          className="text-gray-300 max-w-2xl mx-auto leading-relaxed italic"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.6 }}
@@ -174,23 +174,23 @@ const BubbleSortPage = () => {
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6">
-            <h3 className="text-xl font-semibold text-white mb-4">
+            <h3 className="text-lg font-semibold text-white mb-4">
               How It Works
             </h3>
-            <ul className="text-gray-300 space-y-2">
-              <li className="flex items-start gap-2">
+            <ul className="text-gray-300 space-y-2 text-[0.9rem]">
+              <li className="flex items-center gap-2">
                 <span className="text-blue-400 mt-1">•</span>
                 Compare adjacent elements in the array
               </li>
-              <li className="flex items-start gap-2">
+              <li className="flex items-center gap-2">
                 <span className="text-blue-400 mt-1">•</span>
                 Swap them if they are in the wrong order
               </li>
-              <li className="flex items-start gap-2">
+              <li className="flex items-center gap-2">
                 <span className="text-blue-400 mt-1">•</span>
                 Repeat until no more swaps are needed
               </li>
-              <li className="flex items-start gap-2">
+              <li className="flex items-center gap-2">
                 <span className="text-blue-400 mt-1">•</span>
                 Largest elements "bubble up" to the end
               </li>
@@ -198,10 +198,10 @@ const BubbleSortPage = () => {
           </div>
 
           <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6">
-            <h3 className="text-xl font-semibold text-white mb-4">
+            <h3 className="text-lg font-semibold text-white mb-4">
               Complexity
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-3 text-[0.9rem]">
               <div>
                 <span className="text-gray-400">Time Complexity:</span>
                 <div className="text-white font-mono">O(n²)</div>

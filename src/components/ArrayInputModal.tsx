@@ -9,12 +9,12 @@ interface ArrayInputModalProps {
   currentArray: number[];
 }
 
-const ArrayInputModal: React.FC<ArrayInputModalProps> = ({
+const ArrayInputModal = ({
   isOpen,
   onClose,
   onApplyArray,
   currentArray,
-}) => {
+}: ArrayInputModalProps) => {
   const [inputValues, setInputValues] = useState<string[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
 
@@ -156,7 +156,7 @@ const ArrayInputModal: React.FC<ArrayInputModalProps> = ({
 
           {/* modal content */}
           <motion.div
-            className="relative w-full max-w-md bg-gray-900/70 border border-white/20 rounded-2xl p-6 shadow-2xl"
+            className="relative w-full max-w-md bg-gray-900/90 border border-white/20 rounded-2xl p-6 shadow-2xl"
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.96 }}
@@ -166,10 +166,10 @@ const ArrayInputModal: React.FC<ArrayInputModalProps> = ({
           >
             {/* header */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-white">Customize Array</h2>
+              <h2 className="text-xl font-bold text-white">Customize Array</h2>
               <button
                 onClick={onClose}
-                className="flex items-center justify-center w-8 h-8 bg-white/5 border border-white/20 rounded-lg text-white hover:bg-white/20 transition-colors duration-150"
+                className="flex items-center justify-center w-8 h-8 hover:border border-white/20 rounded-lg text-white hover:bg-white/5 transition-colors duration-150"
               >
                 <X size={16} />
               </button>
@@ -178,14 +178,14 @@ const ArrayInputModal: React.FC<ArrayInputModalProps> = ({
             {/* input section */}
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
-                <label className="text-white font-medium">Array Elements</label>
+                <label className="text-white text-sm">Array Elements</label>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={removeInput}
                     disabled={inputValues.length <= 1}
-                    className="flex items-center justify-center w-8 h-8 bg-white/10 border border-white/20 rounded-lg text-white hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
+                    className="flex items-center justify-center w-8 h-8 border border-white/20 rounded-lg text-white hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
                   >
-                    <Minus size={14} />
+                    <Minus size={13} />
                   </button>
                   <span className="text-gray-300 text-sm">
                     {inputValues.length}/8
@@ -193,9 +193,9 @@ const ArrayInputModal: React.FC<ArrayInputModalProps> = ({
                   <button
                     onClick={addInput}
                     disabled={inputValues.length >= 8}
-                    className="flex items-center justify-center w-8 h-8 bg-white/10 border border-white/20 rounded-lg text-white hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
+                    className="flex items-center justify-center w-8 h-8 border border-white/20 rounded-lg text-white hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
                   >
-                    <Plus size={14} />
+                    <Plus size={13} />
                   </button>
                 </div>
               </div>
@@ -211,9 +211,9 @@ const ArrayInputModal: React.FC<ArrayInputModalProps> = ({
                       placeholder={`Element ${index + 1}`}
                       min="-999"
                       max="999"
-                      className={`w-full px-3 py-2 bg-white/10 border ${
+                      className={`w-full px-3 py-2 bg-white/5 border ${
                         errors[index] ? "border-red-400/60" : "border-white/30"
-                      } rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400/60 focus:ring-2 focus:ring-blue-400/20 transition-colors duration-150`}
+                      } rounded-lg text-white text-sm placeholder-gray-400 focus:outline-none focus:border-blue-400/60 focus:ring-2 focus:ring-blue-400/20 transition-colors duration-150`}
                     />
                     {errors[index] && (
                       <motion.p
@@ -238,14 +238,14 @@ const ArrayInputModal: React.FC<ArrayInputModalProps> = ({
             <div className="flex gap-2 mb-6">
               <button
                 onClick={generateRandomArray}
-                className="flex items-center gap-2 px-3 py-2 bg-purple-600/30 border border-purple-400/40 rounded-lg text-purple-200 hover:bg-purple-600/40 transition-colors duration-150 font-medium text-sm flex-1"
+                className="flex items-center gap-2 px-3 py-2 bg-purple-600/10 border border-purple-400/40 rounded-lg text-purple-200 hover:bg-purple-600/40 transition-colors duration-150 font-medium text-xs flex-1"
               >
                 <Shuffle size={14} />
                 Random
               </button>
               <button
                 onClick={resetToDefault}
-                className="flex items-center gap-2 px-3 py-2 bg-gray-600/30 border border-gray-400/40 rounded-lg text-gray-200 hover:bg-gray-600/40 transition-colors duration-150 font-medium text-sm flex-1"
+                className="flex items-center gap-2 px-3 py-2 bg-gray-600/10 border border-gray-400/40 rounded-lg text-gray-200 hover:bg-gray-600/40 transition-colors duration-150 font-medium text-xs flex-1"
               >
                 <RotateCcw size={14} />
                 Default
@@ -256,14 +256,14 @@ const ArrayInputModal: React.FC<ArrayInputModalProps> = ({
             <div className="flex gap-3">
               <button
                 onClick={onClose}
-                className="flex-1 px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white hover:bg-white/20 transition-colors duration-150 font-medium"
+                className="flex-1 px-4 py-2 bg-white/0 border border-white/30 rounded-lg text-white hover:bg-white/10 transition-colors duration-150 text-sm"
               >
                 Cancel
               </button>
               <button
                 onClick={handleApply}
                 disabled={hasErrors}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600/30 border border-emerald-400/40 rounded-lg text-emerald-200 hover:bg-emerald-600/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150 font-medium"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600/30 border border-emerald-400/40 rounded-lg text-emerald-200 hover:bg-emerald-600/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150 font-medium text-sm"
               >
                 <Check size={16} />
                 Apply Array

@@ -245,14 +245,14 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
               disabled={isAtStart}
               onMouseEnter={() => setHoveredButton("previous")}
               onMouseLeave={() => setHoveredButton(null)}
-              className="flex items-center justify-center w-12 h-12 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/15 hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
+              className="flex items-center justify-center w-10 h-10 text-xs bg-white/5 border border-white/20 rounded-lg text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/15 hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
             >
-              <SkipBack size={20} />
+              <SkipBack size={16} />
             </button>
             {hoveredButton === "previous" && !isAtStart && (
               <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg border border-gray-700 whitespace-nowrap animate-in fade-in slide-in-from-bottom-2 duration-200">
                 Previous Step
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900" />
               </div>
             )}
           </div>
@@ -263,14 +263,14 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
               onClick={toggleAutoPlay}
               onMouseEnter={() => setHoveredButton("play")}
               onMouseLeave={() => setHoveredButton(null)}
-              className="flex items-center justify-center w-16 h-12 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white font-semibold hover:bg-white/15 hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
+              className="flex items-center justify-center w-14 h-12 text-xs bg-white/10 border border-white/20 rounded-lg text-white font-semibold hover:bg-white/15 hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
             >
-              {isAutoPlaying ? <Pause size={20} /> : <Play size={20} />}
+              {isAutoPlaying ? <Pause size={16} /> : <Play size={16} />}
             </button>
             {hoveredButton === "play" && (
               <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg border border-gray-700 whitespace-nowrap animate-in fade-in slide-in-from-bottom-2 duration-200">
                 {isAutoPlaying ? "Pause" : isAtEnd ? "Restart" : "Auto Play"}
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900" />
               </div>
             )}
           </div>
@@ -282,7 +282,7 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
               disabled={isAtEnd}
               onMouseEnter={() => setHoveredButton("next")}
               onMouseLeave={() => setHoveredButton(null)}
-              className="flex items-center justify-center w-12 h-12 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/15 hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
+              className="flex items-center justify-center w-10 h-10 text-xs bg-white/5 border border-white/20 rounded-lg text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/15 hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
             >
               <SkipForward size={20} />
             </button>
@@ -300,7 +300,7 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
               onClick={resetAnimation}
               onMouseEnter={() => setHoveredButton("reset")}
               onMouseLeave={() => setHoveredButton(null)}
-              className="flex items-center justify-center w-12 h-12 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white font-semibold hover:bg-white/15 hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 ml-2"
+              className="flex items-center justify-center w-10 h-10 text-xs bg-white/0 border border-white/20 rounded-lg text-white font-semibold hover:bg-white/15 hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 ml-2"
             >
               <RotateCcw size={20} />
             </button>
@@ -410,6 +410,7 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
             >
               Step {currentStepIndex + 1} of {steps.length}
             </motion.span>
+
             <motion.div
               className="flex items-center gap-2"
               animate={{ opacity: isAutoPlaying ? [1, 0.6, 1] : 1 }}
@@ -429,35 +430,37 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
               </span>
             </motion.div>
           </div>
+
           <motion.p
-            className="text-gray-100 mb-4 text-lg font-medium leading-relaxed min-h-[3em]"
+            className="text-gray-100 mb-4 font-medium leading-relaxed min-h-[3em]"
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3 }}
           >
             {currentStep?.explanation || "Processing..."}
           </motion.p>
+
           {currentStep.variables && (
             <motion.div
               className="flex flex-wrap gap-4 text-sm"
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="flex items-center gap-2 px-3 py-2 bg-blue-500/20 rounded-xl border border-blue-400/30">
+              <div className="flex items-center gap-2 px-3 py-2 bg-blue-500/10 rounded-xl border border-blue-400/30">
                 <div className="w-2 h-2 bg-blue-400 rounded-full" />
-                <span className="text-blue-200 font-semibold">
+                <span className="text-blue-200 font-semibold text-xs">
                   Pass: {(currentStep.variables.outerLoop || 0) + 1}
                 </span>
               </div>
-              <div className="flex items-center gap-2 px-3 py-2 bg-emerald-500/20 rounded-xl border border-emerald-400/30">
+              <div className="flex items-center gap-2 px-3 py-2 bg-emerald-500/10 rounded-xl border border-emerald-400/30">
                 <div className="w-2 h-2 bg-emerald-400 rounded-full" />
-                <span className="text-emerald-200 font-semibold">
+                <span className="text-emerald-200 font-semibold text-xs">
                   Total Swaps: {currentStep.variables.swaps || 0}
                 </span>
               </div>
               {currentStep.variables.swapsInPass !== undefined && (
-                <div className="flex items-center gap-2 px-3 py-2 bg-purple-500/20 rounded-xl border border-purple-400/30">
+                <div className="flex items-center gap-2 px-3 py-2 bg-purple-500/10 rounded-xl border border-purple-400/30">
                   <div className="w-2 h-2 bg-purple-400 rounded-full" />
-                  <span className="text-purple-200 font-semibold">
+                  <span className="text-purple-200 font-semibold text-xs">
                     Swaps in Pass: {currentStep.variables.swapsInPass}
                   </span>
                 </div>
@@ -499,11 +502,9 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
               icon: "✓",
             },
           ].map((item) => (
-            <motion.div
+            <div
               key={item.label}
-              className="flex items-center gap-2.5 px-3.5 py-1.5 backdrop-blur-sm bg-white/10 rounded-lg border border-white/20"
-              whileHover={{ scale: 1.05, y: -2 }}
-              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              className="flex items-center text-xs gap-2.5 px-3.5 py-1.5 backdrop-blur-sm bg-white/10 rounded-lg border border-white/20 hover:scale-105 transition-all duration-150"
             >
               <div
                 className={`w-4 h-4 bg-gradient-to-br ${item.color} rounded-md shadow flex items-center justify-center text-white text-xs`}
@@ -511,7 +512,7 @@ const BubbleSortVisualizer: React.FC<BubbleSortVisualizerProps> = ({
                 {item.icon}
               </div>
               <span className="text-gray-200 font-medium">{item.label}</span>
-            </motion.div>
+            </div>
           ))}
         </motion.div>
       </motion.div>
