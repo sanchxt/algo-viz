@@ -7,6 +7,7 @@ import ArrayInputModal from "../components/ArrayInputModal";
 import ArrayCustomizer from "../components/ArrayCustomizer";
 import { bubbleSortCodes } from "../constants/bubbleSortCode";
 import type { Language, AlgorithmStep } from "../types/algorithm";
+import { usePersistedLanguage } from "../hooks/usePersistedLanguage";
 import { bubbleSortIntuition } from "../constants/bubbleSortIntuition";
 import BubbleSortVisualizer from "../components/animation/bubble-sort/BubbleSortVisualizer";
 
@@ -20,9 +21,13 @@ const languageLabels: Record<Language, string> = {
   go: "Go",
 };
 
+const availableLanguages = Object.keys(languageLabels) as Language[];
+
 const BubbleSortPage = () => {
-  const [selectedLanguage, setSelectedLanguage] =
-    useState<Language>("javascript");
+  const [selectedLanguage, setSelectedLanguage] = usePersistedLanguage({
+    availableLanguages,
+  });
+
   const [currentHighlightedLines, setCurrentHighlightedLines] = useState<
     number[]
   >([]);
@@ -155,7 +160,7 @@ const BubbleSortPage = () => {
           highlightedLines={currentHighlightedLines}
           selectedLanguage={selectedLanguage}
           onLanguageChange={setSelectedLanguage}
-          availableLanguages={Object.keys(languageLabels) as Language[]}
+          availableLanguages={availableLanguages}
           languageLabels={languageLabels}
           showVariableViewer={showVariableViewer}
           onToggleVariableViewer={toggleVariableViewer}
