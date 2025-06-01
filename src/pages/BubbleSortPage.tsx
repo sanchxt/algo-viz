@@ -2,13 +2,13 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
-import type { Language, AlgorithmStep } from "../types/algorithm";
 import CodeDisplay from "../components/CodeDisplay";
 import ArrayInputModal from "../components/ArrayInputModal";
 import ArrayCustomizer from "../components/ArrayCustomizer";
 import { bubbleSortCodes } from "../constants/bubbleSortCode";
+import type { Language, AlgorithmStep } from "../types/algorithm";
 import { bubbleSortIntuition } from "../constants/bubbleSortIntuition";
-import BubbleSortVisualizer from "../components/animation/BubbleSortVisualizer";
+import BubbleSortVisualizer from "../components/animation/bubble-sort/BubbleSortVisualizer";
 
 const languageLabels: Record<Language, string> = {
   cpp: "C++",
