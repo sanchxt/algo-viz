@@ -37,6 +37,9 @@
   --color-text-muted: 156 163 175; /* gray-400 */
   --color-text-light: 209 213 219; /* gray-300 */
   --color-text-white: 255 255 255; /* white */
+
+  --color-page-transition-top: 33 36 41;
+  --color-page-transition-bottom: 13 22 36;
 }
 
 body {
