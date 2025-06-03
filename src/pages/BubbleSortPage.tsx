@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 import CodeDisplay from "../components/CodeDisplay";
@@ -7,6 +7,7 @@ import ArrayInputModal from "../components/ArrayInputModal";
 import ArrayCustomizer from "../components/ArrayCustomizer";
 import { bubbleSortCodes } from "../constants/bubbleSortCode";
 import type { Language, AlgorithmStep } from "../types/algorithm";
+import { getCategoryById } from "../constants/algorithmCategories";
 import { usePersistedLanguage } from "../hooks/usePersistedLanguage";
 import { bubbleSortIntuition } from "../constants/bubbleSortIntuition";
 import BubbleSortVisualizer from "../components/animation/bubble-sort/BubbleSortVisualizer";
@@ -24,6 +25,32 @@ const languageLabels: Record<Language, string> = {
 const availableLanguages = Object.keys(languageLabels) as Language[];
 
 const BubbleSortPage = () => {
+  const { categoryId, algorithmId } = useParams<{
+    categoryId: string;
+    algorithmId: string;
+  }>();
+
+  // validate route parameters
+  if (!categoryId || !algorithmId) {
+    return <Navigate to="/" replace />;
+  }
+
+  // validate that the algorithm exists in the category
+  const category = getCategoryById(categoryId);
+  if (!category) {
+    return <Navigate to="/" replace />;
+  }
+
+  const algorithm = category.algorithms.find((alg) => alg.id === algorithmId);
+  if (!algorithm) {
+    return <Navigate to={`/categories/${categoryId}`} replace />;
+  }
+
+  // for now, we're only handle bubble sort
+  if (algorithmId !== "bubble-sort") {
+    return <Navigate to={`/categories/${categoryId}`} replace />;
+  }
+
   const [selectedLanguage, setSelectedLanguage] = usePersistedLanguage({
     availableLanguages,
   });
@@ -79,18 +106,27 @@ const BubbleSortPage = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white hover:bg-white/15 transition-all duration-300 font-medium text-sm"
-        >
-          <motion.span
-            whileHover={{ x: -4 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+        <div className="flex items-center gap-4">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white hover:bg-white/15 transition-all duration-300 font-medium text-sm"
           >
-            ←
-          </motion.span>
-          Back to Home
-        </Link>
+            <motion.span
+              whileHover={{ x: -4 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            >
+              ←
+            </motion.span>
+            Home
+          </Link>
+          <span className="text-gray-400">/</span>
+          <Link
+            to={`/categories/${categoryId}`}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white hover:bg-white/15 transition-all duration-300 font-medium text-sm"
+          >
+            {category.name}
+          </Link>
+        </div>
       </motion.nav>
 
       {/* header */}
@@ -114,7 +150,7 @@ const BubbleSortPage = () => {
             backgroundSize: "400% 400%",
           }}
         >
-          Bubble Sort
+          {algorithm.name}
         </motion.h1>
         <motion.p
           className="text-gray-300 max-w-2xl mx-auto leading-relaxed italic"
@@ -122,12 +158,11 @@ const BubbleSortPage = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.6 }}
         >
-          Watch how Bubble Sort compares adjacent elements and swaps them to
-          gradually move larger elements to the end of the array.
+          {algorithm.description}
         </motion.p>
       </motion.header>
 
-      {/* array Customization section */}
+      {/* array customization */}
       <ArrayCustomizer
         currentArray={currentArray}
         onOpenModal={handleOpenArrayModal}
