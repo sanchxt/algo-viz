@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
-import PageTransition from "./components/PageTransition";
+import PageTransition from "@components/PageTransition";
 
 const App = () => {
   const location = useLocation();

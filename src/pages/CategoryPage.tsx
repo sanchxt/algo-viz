@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { Link, useParams, Navigate } from "react-router-dom";
-import { getCategoryById } from "../constants/algorithmCategories";
-import type { Algorithm } from "../types/algorithm";
+
+import type { Algorithm } from "@/types/algorithm";
+import { getCategoryById } from "@constants/algorithmCategories";
 
 const CategoryPage = () => {
   const { categoryId } = useParams<{ categoryId: string }>();

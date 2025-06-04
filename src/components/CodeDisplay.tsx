@@ -7,8 +7,11 @@ import MobileMenu from "./MobileMenu";
 import LanguageSelector from "./LanguageSelector";
 import VariableInspector from "./VariableInspector";
 import CodeSyntaxHighlighter from "./CodeSyntaxHighlighter";
-import type { AlgorithmIntuition } from "../types/algorithm";
-import type { Language, AlgorithmStep } from "../types/algorithm";
+import type {
+  AlgorithmIntuition,
+  Language,
+  AlgorithmStep,
+} from "@/types/algorithm";
 
 interface CodeDisplayProps {
   title?: string;

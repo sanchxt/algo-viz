@@ -1,19 +1,18 @@
 import { motion } from "framer-motion";
 import { useState, useEffect, useCallback } from "react";
 
-import type { AlgorithmStep, Language } from "../../../types/algorithm";
-import { generateBubbleSortSteps } from "../../../algorithms/sorting/bubbleSort";
-import { algorithmLineResolver } from "../../../utils/AlgorithmLineResolver";
+import type { AlgorithmStep, Language } from "@/types/algorithm";
+import { algorithmLineResolver } from "@utils/AlgorithmLineResolver";
+import { generateBubbleSortSteps } from "@algorithms/sorting/bubbleSort";
 import {
   bubbleSortLineMapping,
   BUBBLE_SORT_ALGORITHM_ID,
-} from "../../../constants/bubbleSortLineMapping";
+} from "@constants/bubbleSortLineMapping";
 
-// Import the new components
-import PlaybackControls from "./PlaybackControls";
 import VisualizationCanvas from "./VisualizationCanvas";
-import StepInformation from "./StepInformation";
 import VisualizationLegend from "./VisualizationLegend";
+import StepInformation from "@components/animation/StepInformation";
+import PlaybackControls from "@components/animation/PlaybackControls";
 
 interface BubbleSortVisualizerProps {
   initialArray?: number[];

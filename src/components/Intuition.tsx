@@ -1,6 +1,6 @@
 import { Lightbulb, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import type { AlgorithmIntuition as AlgorithmIntuitionType } from "../types/algorithm";
+import type { AlgorithmIntuition as AlgorithmIntuitionType } from "@/types/algorithm";
 
 interface IntuitionProps {
   isOpen: boolean;

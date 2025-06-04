@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
-import { algorithmCategories } from "../constants/algorithmCategories";
+import { algorithmCategories } from "@/constants/algorithmCategories";
 
 const HomePage = () => {
   return (

@@ -1,7 +1,7 @@
 import { Lightbulb, Eye, Menu, Code } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import type { Language } from "../types/algorithm";
+import type { Language } from "@/types/algorithm";
 
 interface MobileMenuProps {
   isOpen: boolean;

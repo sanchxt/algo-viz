@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-import type { AlgorithmStep } from "../../../types/algorithm";
+import type { AlgorithmStep } from "@/types/algorithm";
 
 interface VisualizationCanvasProps {
   currentStep: AlgorithmStep;

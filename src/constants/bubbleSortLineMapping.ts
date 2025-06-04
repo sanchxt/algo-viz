@@ -1,4 +1,4 @@
-import type { AlgorithmLineMapping } from "../types/algorithm";
+import type { AlgorithmLineMapping } from "@/types/algorithm";
 
 export const bubbleSortLineMapping: AlgorithmLineMapping = {
   initialization: {

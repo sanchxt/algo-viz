@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Language } from "../types/algorithm";
+import type { Language } from "@/types/algorithm";
 
 const STORAGE_KEY = "algoviz-preferred-language";
 const DEFAULT_LANGUAGE: Language = "javascript";

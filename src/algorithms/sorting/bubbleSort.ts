@@ -1,4 +1,4 @@
-import type { AlgorithmStep } from "../../types/algorithm";
+import type { AlgorithmStep } from "@/types/algorithm";
 
 export function generateBubbleSortSteps(
   initialArray: number[]
