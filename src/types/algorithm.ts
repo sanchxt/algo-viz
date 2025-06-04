@@ -37,7 +37,7 @@ export interface AlgorithmStep {
 export interface Algorithm {
   id: string;
   name: string;
-  category: "sorting" | "searching" | "trees";
+  category: "sorting" | "search" | "trees";
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   description: string;
 }
