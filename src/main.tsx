@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import App from "./App.tsx";
 import HomePage from "./pages/HomePage.tsx";
+import CategoryPage from "./pages/CategoryPage.tsx";
 import BubbleSortPage from "./pages/BubbleSortPage.tsx";
 
 import "./index.css";
@@ -18,7 +19,11 @@ const router = createBrowserRouter([
         Component: HomePage,
       },
       {
-        path: "algorithms/bubble-sort",
+        path: "categories/:categoryId",
+        Component: CategoryPage,
+      },
+      {
+        path: "categories/:categoryId/:algorithmId",
         Component: BubbleSortPage,
       },
     ],
