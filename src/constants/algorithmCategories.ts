@@ -1,4 +1,4 @@
-import type { Algorithm } from "../types/algorithm";
+import type { Algorithm } from "@/types/algorithm";
 
 export interface AlgorithmCategory {
   id: string;
@@ -37,17 +37,25 @@ export const algorithmCategories: AlgorithmCategory[] = [
     ],
   },
   {
-    id: "binary-search",
-    name: "Binary Search",
-    description:
-      "Efficient search algorithms for sorted data structures using divide-and-conquer approach.",
+    id: "search",
+    name: "Search",
+    description: "Linear and Binary search algorithms for data structures.",
     icon: "🔍",
     color: {
-      gradient: "from-green-400/20 to-green-600/20",
+      gradient: "from-green-500/20 to-emerald-500/20",
       border: "border-green-400/30",
       text: "text-green-300",
     },
-    algorithms: [],
+    algorithms: [
+      {
+        id: "binary-search",
+        name: "Binary Search",
+        category: "searching",
+        difficulty: "Beginner",
+        description:
+          "An efficient algorithm for finding a specific value in a sorted array by repeatedly dividing the search interval in half.",
+      },
+    ],
   },
   {
     id: "sliding-window",
