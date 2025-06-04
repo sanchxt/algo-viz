@@ -7,6 +7,8 @@ export type StepType =
   | "assignment"
   | "function_call"
   | "return"
+  | "return_found"
+  | "return_not_found"
   | "tree_traversal"
   | "graph_visit"
   | "no_swap"

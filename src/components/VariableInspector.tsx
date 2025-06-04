@@ -2,7 +2,7 @@ import { useState } from "react";
 import { X, Eye, EyeOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import type { AlgorithmStep } from "../types/algorithm";
+import type { AlgorithmStep } from "@/types/algorithm";
 
 interface VariableInspectorProps {
   isOpen: boolean;

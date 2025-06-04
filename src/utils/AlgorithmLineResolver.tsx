@@ -4,7 +4,7 @@ import type {
   StepContext,
   Language,
   LineRange,
-} from "../types/algorithm";
+} from "@/types/algorithm";
 
 export class AlgorithmLineResolver {
   private lineMappings: Map<string, AlgorithmLineMapping> = new Map();

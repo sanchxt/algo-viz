@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import type { Language } from "../types/algorithm";
+import type { Language } from "@/types/algorithm";
 
 interface LanguageSelectorProps {
   selectedLanguage: string;

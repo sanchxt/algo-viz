@@ -1,4 +1,4 @@
-import type { AlgorithmIntuition } from "../types/algorithm";
+import type { AlgorithmIntuition } from "@/types/algorithm";
 
 export const bubbleSortIntuition: AlgorithmIntuition = {
   title: "Bubble Sort",
