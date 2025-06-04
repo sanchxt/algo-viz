@@ -50,7 +50,7 @@ export const algorithmCategories: AlgorithmCategory[] = [
       {
         id: "binary-search",
         name: "Binary Search",
-        category: "searching",
+        category: "search",
         difficulty: "Beginner",
         description:
           "An efficient algorithm for finding a specific value in a sorted array by repeatedly dividing the search interval in half.",
