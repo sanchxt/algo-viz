@@ -164,20 +164,6 @@ const BubbleSortVisualizer = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        {/* bg decorations */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <motion.div
-            className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-[rgb(var(--color-primary-400)/0.3)] to-[rgb(var(--color-primary-600)/0.3)] rounded-full blur-3xl"
-            animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          />
-          <motion.div
-            className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-[rgb(var(--color-secondary-400)/0.3)] to-[rgb(var(--color-secondary-600)/0.3)] rounded-full blur-3xl"
-            animate={{ scale: [1.2, 1, 1.2], rotate: [360, 180, 0] }}
-            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          />
-        </div>
-
         {/* header */}
         <motion.div
           className="text-center mb-8 relative z-10"
@@ -219,6 +205,28 @@ const BubbleSortVisualizer = ({
           currentStepIndex={currentStepIndex}
           totalSteps={steps.length}
           isAutoPlaying={isAutoPlaying}
+          variableConfig={[
+            {
+              key: "pass",
+              label: "Pass",
+              color: "blue",
+              getValue: (vars) => (vars.outerLoop || 0) + 1,
+              condition: (vars) => vars.outerLoop !== undefined,
+            },
+            {
+              key: "totalSwaps",
+              label: "Total Swaps",
+              color: "emerald",
+              getValue: (vars) => vars.swaps || 0,
+            },
+            {
+              key: "swapsInPass",
+              label: "Swaps in Pass",
+              color: "purple",
+              getValue: (vars) => vars.swapsInPass || 0,
+              condition: (vars) => vars.swapsInPass !== undefined,
+            },
+          ]}
         />
 
         {/* legend */}
