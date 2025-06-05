@@ -10,21 +10,27 @@ import {
   Target,
 } from "lucide-react";
 
-interface BinarySearchInputModalProps {
+interface SearchInputModalProps {
   isOpen: boolean;
   onClose: () => void;
   onApplyArrayAndTarget: (array: number[], target: number) => void;
   currentArray: number[];
   currentTarget: number;
+  title: string;
+  requiresSorting?: boolean;
+  warningMessage?: string;
 }
 
-const BinarySearchInputModal = ({
+const SearchInputModal = ({
   isOpen,
   onClose,
   onApplyArrayAndTarget,
   currentArray,
   currentTarget,
-}: BinarySearchInputModalProps) => {
+  title,
+  requiresSorting = false,
+  warningMessage,
+}: SearchInputModalProps) => {
   const [inputValues, setInputValues] = useState<string[]>([]);
   const [targetValue, setTargetValue] = useState<string>("");
   const [errors, setErrors] = useState<string[]>([]);
@@ -45,7 +51,7 @@ const BinarySearchInputModal = ({
     }
   }, [isOpen, currentArray, currentTarget]);
 
-  // Handle Esc key to close modal
+  // handle Esc key to close modal
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === "Escape" && isOpen) {
@@ -125,7 +131,7 @@ const BinarySearchInputModal = ({
   };
 
   const addInput = () => {
-    if (inputValues.length < 8) {
+    if (inputValues.length < 12) {
       setInputValues([...inputValues, ""]);
       setErrors([...errors, ""]);
     }
@@ -139,15 +145,17 @@ const BinarySearchInputModal = ({
   };
 
   const generateRandomArray = () => {
-    const size = Math.floor(Math.random() * 3) + 3; // 3-5 elements
+    const size = Math.floor(Math.random() * 4) + 4; // 4-7 elements
     const randomValues = Array.from({ length: size }, () => {
       return Math.floor(Math.random() * 1999) - 999; // -999 to +999
     });
 
-    // Sort the array for binary search
-    randomValues.sort((a, b) => a - b);
+    // sort for binary search if required
+    if (requiresSorting) {
+      randomValues.sort((a, b) => a - b);
+    }
 
-    // Pick a random target from the array (guaranteed to exist)
+    // pick a random target from the array (guaranteed to exist)
     const randomTarget =
       randomValues[Math.floor(Math.random() * randomValues.length)];
 
@@ -158,21 +166,18 @@ const BinarySearchInputModal = ({
   };
 
   const resetToDefault = () => {
-    const defaultValues = [
-      "2",
-      "5",
-      "8",
-      "12",
-      "16",
-      "23",
-      "38",
-      "45",
-      "67",
-      "78",
-      "89",
-      "91",
-    ];
-    const defaultTarget = "3";
+    let defaultValues: string[];
+    let defaultTarget: string;
+
+    if (requiresSorting) {
+      // binary search defaults - sorted
+      defaultValues = ["2", "5", "8", "12", "16", "23", "38", "45"];
+      defaultTarget = "8";
+    } else {
+      // linear search defaults - unsorted
+      defaultValues = ["64", "34", "25", "12", "22", "11", "90"];
+      defaultTarget = "22";
+    }
 
     setInputValues(defaultValues);
     setTargetValue(defaultTarget);
@@ -189,15 +194,29 @@ const BinarySearchInputModal = ({
 
     const targetNum = parseInt(targetValue);
 
+    let finalArray = validNumbers;
+    let finalTarget = targetNum;
+
     if (validNumbers.length === 0) {
-      // if no valid numbers, use default
-      onApplyArrayAndTarget([2, 5, 8, 12, 16, 23, 38, 45, 67, 78, 89, 91], 3);
+      // use defaults if no valid numbers
+      if (requiresSorting) {
+        finalArray = [2, 5, 8, 12, 16, 23, 38, 45];
+        finalTarget = isNaN(targetNum) ? 8 : targetNum;
+      } else {
+        finalArray = [64, 34, 25, 12, 22, 11, 90];
+        finalTarget = isNaN(targetNum) ? 22 : targetNum;
+      }
     } else if (isNaN(targetNum)) {
-      // if no valid target, use default
-      onApplyArrayAndTarget(validNumbers, 3);
-    } else {
-      onApplyArrayAndTarget(validNumbers, targetNum);
+      // use default target if invalid
+      finalTarget = requiresSorting ? 8 : 22;
     }
+
+    // sort if required (for binary search)
+    if (requiresSorting) {
+      finalArray.sort((a, b) => a - b);
+    }
+
+    onApplyArrayAndTarget(finalArray, finalTarget);
     onClose();
   };
 
@@ -237,9 +256,7 @@ const BinarySearchInputModal = ({
           >
             {/* header */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-white">
-                Customize Binary Search
-              </h2>
+              <h2 className="text-xl font-bold text-white">{title}</h2>
               <button
                 onClick={onClose}
                 className="flex items-center justify-center w-8 h-8 hover:border border-white/20 rounded-lg text-white hover:bg-white/5 transition-colors duration-150"
@@ -292,11 +309,11 @@ const BinarySearchInputModal = ({
                     <Minus size={13} />
                   </button>
                   <span className="text-gray-300 text-sm">
-                    {inputValues.length}/8
+                    {inputValues.length}/12
                   </span>
                   <button
                     onClick={addInput}
-                    disabled={inputValues.length >= 8}
+                    disabled={inputValues.length >= 12}
                     className="flex items-center justify-center w-8 h-8 border border-white/20 rounded-lg text-white hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
                   >
                     <Plus size={13} />
@@ -335,11 +352,11 @@ const BinarySearchInputModal = ({
 
               <div className="text-gray-400 text-xs mt-3 space-y-1">
                 <p>
-                  Range: -999 to 999 • Leave empty to exclude • Max 8 elements
+                  Range: -999 to 999 • Leave empty to exclude • Max 12 elements
                 </p>
-                <p className="text-yellow-300">
-                  ⚠️ Array will be automatically sorted for binary search
-                </p>
+                {warningMessage && (
+                  <p className="text-yellow-300">{warningMessage}</p>
+                )}
               </div>
             </div>
 
@@ -385,4 +402,4 @@ const BinarySearchInputModal = ({
   );
 };
 
-export default BinarySearchInputModal;
+export default SearchInputModal;
