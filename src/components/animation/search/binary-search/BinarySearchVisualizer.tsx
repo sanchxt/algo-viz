@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useState, useEffect, useCallback } from "react";
 
 import type { AlgorithmStep, Language } from "@/types/algorithm";
-import { generateBinarySearchSteps } from "@algorithms/sorting/searching/binarySearch";
+import { generateBinarySearchSteps } from "@/algorithms/searching/binarySearch";
 
 import BinarySearchCanvas from "./BinarySearchCanvas";
 import BinarySearchLegend from "./BinarySearchLegend";
