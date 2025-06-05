@@ -74,7 +74,7 @@ const VisualizationCanvas = ({
 
         return (
           <motion.div
-            key={value}
+            key={`${value}-${index}`}
             layout
             initial="hidden"
             animate="visible"
