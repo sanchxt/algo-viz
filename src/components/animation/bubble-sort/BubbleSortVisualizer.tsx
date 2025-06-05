@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
 import { useState, useEffect, useCallback } from "react";
 
-import type { AlgorithmStep, Language } from "@/types/algorithm";
-import { algorithmLineResolver } from "@utils/AlgorithmLineResolver";
-import { generateBubbleSortSteps } from "@algorithms/sorting/bubbleSort";
 import {
   bubbleSortLineMapping,
   BUBBLE_SORT_ALGORITHM_ID,
-} from "@constants/bubbleSortLineMapping";
+} from "@/constants/sorting/bubble-sort/bubbleSortLineMapping";
+import type { AlgorithmStep, Language } from "@/types/algorithm";
+import { algorithmLineResolver } from "@utils/AlgorithmLineResolver";
+import { generateBubbleSortSteps } from "@algorithms/sorting/bubbleSort";
 
 import VisualizationCanvas from "./VisualizationCanvas";
 import VisualizationLegend from "./VisualizationLegend";
