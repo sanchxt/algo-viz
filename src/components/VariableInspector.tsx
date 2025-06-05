@@ -51,6 +51,29 @@ const VariableInspector = ({
     );
   };
 
+  const getHighlightedLabel = (step: AlgorithmStep): string => {
+    if (
+      step.stepType === "comparison" ||
+      step.stepType === "loop_start" ||
+      step.stepType === "return_found" ||
+      (step.stepContext?.dataStructure === "array" &&
+        (step.stepType.includes("search") ||
+          step.explanation?.toLowerCase().includes("search")))
+    ) {
+      return "Current";
+    }
+
+    if (
+      step.stepType === "swap" ||
+      step.stepType === "pass_complete" ||
+      step.explanation?.toLowerCase().includes("sort")
+    ) {
+      return "Sorted";
+    }
+
+    return "Highlighted";
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -336,7 +359,7 @@ const VariableInspector = ({
                               <div className="flex items-center gap-1 px-2 py-1 bg-green-500/20 rounded-lg border border-green-400/30">
                                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                                 <span className="text-green-200">
-                                  Sorted:{" "}
+                                  {getHighlightedLabel(currentStep)}:{" "}
                                   {currentStep.highlightedIndices.join(", ")}
                                 </span>
                               </div>

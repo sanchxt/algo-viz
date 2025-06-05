@@ -7,10 +7,10 @@ import TargetCustomizer from "@components/TargetCustomizer";
 import type { Language, AlgorithmStep } from "@/types/algorithm";
 import { getCategoryById } from "@constants/algorithmCategories";
 import { usePersistedLanguage } from "@hooks/usePersistedLanguage";
+import SearchInputModal from "@components/animation/search/SearchInputModal";
 import { binarySearchCodes } from "@constants/search/binary-search/binarySearchCode";
 import { binarySearchIntuition } from "@constants/search/binary-search/binarySearchIntuition";
 import BinarySearchVisualizer from "@components/animation/search/binary-search/BinarySearchVisualizer";
-import BinarySearchInputModal from "@components/animation/search/binary-search/BinarySearchInputModal";
 
 const languageLabels: Record<Language, string> = {
   cpp: "C++",
@@ -99,12 +99,15 @@ const BinarySearchPage = () => {
   return (
     <>
       {/* binary search input modal */}
-      <BinarySearchInputModal
+      <SearchInputModal
         isOpen={showInputModal}
         onClose={() => setShowInputModal(false)}
         onApplyArrayAndTarget={handleArrayAndTargetUpdate}
         currentArray={currentArray}
         currentTarget={target}
+        title="Customize Binary Search"
+        requiresSorting={true}
+        warningMessage="⚠️ Array will be automatically sorted for binary search"
       />
 
       {/* navigation */}

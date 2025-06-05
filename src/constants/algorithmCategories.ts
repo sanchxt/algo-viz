@@ -48,6 +48,14 @@ export const algorithmCategories: AlgorithmCategory[] = [
     },
     algorithms: [
       {
+        id: "linear-search",
+        name: "Linear Search",
+        category: "search",
+        difficulty: "Beginner",
+        description:
+          "A simple search algorithm that checks every element sequentially until the target is found or the list ends.",
+      },
+      {
         id: "binary-search",
         name: "Binary Search",
         category: "search",

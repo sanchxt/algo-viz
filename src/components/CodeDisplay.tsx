@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Eye, Lightbulb } from "lucide-react";
+import { Eye, Lightbulb, Menu } from "lucide-react";
 
 import Intuition from "./Intuition";
 import MobileMenu from "./MobileMenu";
@@ -64,7 +64,7 @@ const CodeDisplay = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
-      {/* Algorithm Intuition Component */}
+      {/* algorithm intuition component */}
       {intuitionData && (
         <Intuition
           isOpen={showIntuition}
@@ -85,7 +85,14 @@ const CodeDisplay = ({
         </h3>
 
         <div className="flex items-center gap-3">
-          {/* Mobile Menu */}
+          <button
+            onClick={() => setShowMobileMenu(true)}
+            className="sm:hidden flex items-center justify-center w-10 h-10 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/15 transition-colors duration-200"
+          >
+            <Menu size={18} />
+          </button>
+
+          {/* mobile menu */}
           <MobileMenu
             isOpen={showMobileMenu}
             onClose={() => setShowMobileMenu(false)}
@@ -101,9 +108,9 @@ const CodeDisplay = ({
             showLanguageSelector={availableLanguages.length > 1}
           />
 
-          {/* Desktop Buttons */}
+          {/* desktop Buttons */}
           <div className="hidden sm:flex items-center gap-3">
-            {/* Show Intuition Button */}
+            {/* show intuition button */}
             {intuitionData && (
               <button
                 onClick={() => setShowIntuition(true)}
@@ -115,7 +122,7 @@ const CodeDisplay = ({
               </button>
             )}
 
-            {/* Variable Inspector Toggle */}
+            {/* variable inspector toggle */}
             {onToggleVariableViewer && (
               <button
                 onClick={onToggleVariableViewer}
@@ -137,7 +144,7 @@ const CodeDisplay = ({
               </button>
             )}
 
-            {/* Language Selector */}
+            {/* language selector */}
             <LanguageSelector
               selectedLanguage={currentLanguage}
               availableLanguages={availableLanguages}
@@ -148,13 +155,13 @@ const CodeDisplay = ({
         </div>
       </motion.div>
 
-      {/* Content Area */}
+      {/* content area */}
       <div
         className={`${
           showVariableViewer ? "grid grid-cols-1 lg:grid-cols-2" : ""
         }`}
       >
-        {/* Code Panel */}
+        {/* code panel */}
         <div
           className={`relative ${
             showVariableViewer ? "border-r border-white/10" : ""
@@ -170,7 +177,7 @@ const CodeDisplay = ({
           </div>
         </div>
 
-        {/* Variable Inspector Panel */}
+        {/* variable inspector panel */}
         <VariableInspector
           isOpen={showVariableViewer}
           onClose={onToggleVariableViewer || (() => {})}

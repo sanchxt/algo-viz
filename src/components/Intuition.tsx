@@ -91,13 +91,13 @@ const Intuition = ({ isOpen, onClose, intuitionData }: IntuitionProps) => {
                 <div className="flex items-center justify-between p-6 border-b border-white/10">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-xl border border-amber-400/30">
-                      <Lightbulb size={20} className="text-amber-400" />
+                      <Lightbulb className="text-amber-400 w-4 h-4 md:w-6 md:h-6" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-white">
+                      <h3 className="text-base sm:text-lg md:text-xl font-semibold text-white">
                         Algorithm Intuition
                       </h3>
-                      <p className="text-gray-400 text-sm">
+                      <p className="text-gray-400 text-[0.8rem] sm:text-sm">
                         {intuitionData.title}
                       </p>
                     </div>
@@ -105,9 +105,9 @@ const Intuition = ({ isOpen, onClose, intuitionData }: IntuitionProps) => {
 
                   <button
                     onClick={onClose}
-                    className="flex items-center justify-center w-10 h-10 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/15 transition-colors duration-200"
+                    className="flex items-center justify-center p-2 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/15 transition-colors duration-200"
                   >
-                    <X size={18} />
+                    <X className="w-4 h-4 md:w-6 md:h-6" />
                   </button>
                 </div>
 
@@ -119,7 +119,7 @@ const Intuition = ({ isOpen, onClose, intuitionData }: IntuitionProps) => {
                   <div className="intuition-content p-6 space-y-8">
                     {/* description */}
                     <div className="intuition-item backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-5">
-                      <p className="text-gray-300 leading-relaxed">
+                      <p className="text-gray-300 leading-relaxed text-[0.8rem] sm:text-sm lg:text-[0.95rem]">
                         {intuitionData.description}
                       </p>
                     </div>
@@ -127,8 +127,8 @@ const Intuition = ({ isOpen, onClose, intuitionData }: IntuitionProps) => {
                     {/* core intuition */}
                     <div className="intuition-item space-y-4">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                        <h4 className="text-lg font-semibold text-white">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full" />
+                        <h4 className="md:text-lg font-semibold text-white">
                           {intuitionData.intuition.title}
                         </h4>
                       </div>
@@ -137,7 +137,7 @@ const Intuition = ({ isOpen, onClose, intuitionData }: IntuitionProps) => {
                           (paragraph, index) => (
                             <p
                               key={index}
-                              className="text-gray-300 leading-relaxed pl-4 border-l-2 border-blue-400/30"
+                              className="text-gray-300 leading-relaxed pl-4 border-l-2 border-blue-400/30 text-[0.8rem] sm:text-sm lg:text-[0.95rem]"
                             >
                               {paragraph}
                             </p>
@@ -150,11 +150,11 @@ const Intuition = ({ isOpen, onClose, intuitionData }: IntuitionProps) => {
                     <div className="intuition-item backdrop-blur-md bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-400/20 rounded-xl p-5">
                       <div className="flex items-center gap-2 mb-3">
                         <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                        <h4 className="text-lg font-semibold text-white">
+                        <h4 className="md:text-lg font-semibold text-white">
                           {intuitionData.realWorldAnalogy.title}
                         </h4>
                       </div>
-                      <p className="text-gray-300 leading-relaxed">
+                      <p className="text-gray-300 leading-relaxed text-[0.8rem] sm:text-sm lg:text-[0.95rem]">
                         {intuitionData.realWorldAnalogy.content}
                       </p>
                     </div>
@@ -163,15 +163,15 @@ const Intuition = ({ isOpen, onClose, intuitionData }: IntuitionProps) => {
                     <div className="intuition-item space-y-4">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                        <h4 className="text-lg font-semibold text-white">
+                        <h4 className="md:text-lg font-semibold text-white">
                           {intuitionData.whenToUse.title}
                         </h4>
                       </div>
 
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8 md:pb-4 xl:pb-2">
                         {/* use cases */}
                         <div className="space-y-3">
-                          <h5 className="text-sm font-medium text-emerald-400 uppercase tracking-wide">
+                          <h5 className="text-[0.8rem] md:text-sm font-medium text-emerald-400 uppercase tracking-wide">
                             Best Use Cases
                           </h5>
                           <div className="space-y-2">
@@ -179,10 +179,10 @@ const Intuition = ({ isOpen, onClose, intuitionData }: IntuitionProps) => {
                               (useCase, index) => (
                                 <div
                                   key={index}
-                                  className="flex items-start gap-3 p-3 backdrop-blur-md bg-white/5 border border-white/10 rounded-lg"
+                                  className="flex items-center gap-3 p-3 backdrop-blur-md bg-white/5 border border-white/10 rounded-lg"
                                 >
-                                  <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full mt-2 flex-shrink-0"></div>
-                                  <p className="text-gray-300 text-sm leading-relaxed">
+                                  <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-emerald-400 rounded-full flex-shrink-0" />
+                                  <p className="text-gray-300 text-[0.8rem] sm:text-sm leading-relaxed">
                                     {useCase}
                                   </p>
                                 </div>
@@ -193,7 +193,7 @@ const Intuition = ({ isOpen, onClose, intuitionData }: IntuitionProps) => {
 
                         {/* examples */}
                         <div className="space-y-3">
-                          <h5 className="text-sm font-medium text-amber-400 uppercase tracking-wide">
+                          <h5 className="text-[0.8rem] md:text-sm font-medium text-amber-400 uppercase tracking-wide">
                             Practical Examples
                           </h5>
                           <div className="space-y-2">
@@ -201,10 +201,10 @@ const Intuition = ({ isOpen, onClose, intuitionData }: IntuitionProps) => {
                               (example, index) => (
                                 <div
                                   key={index}
-                                  className="flex items-start gap-3 p-3 backdrop-blur-md bg-amber-500/10 border border-amber-400/20 rounded-lg"
+                                  className="flex items-center gap-3 p-3 backdrop-blur-md bg-amber-500/10 border border-amber-400/20 rounded-lg"
                                 >
-                                  <div className="w-1.5 h-1.5 bg-amber-400 rounded-full mt-2 flex-shrink-0"></div>
-                                  <p className="text-gray-300 text-sm leading-relaxed">
+                                  <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-amber-400 rounded-full mt-2 flex-shrink-0"></div>
+                                  <p className="text-gray-300 text-[0.8rem] sm:text-sm leading-relaxed">
                                     {example}
                                   </p>
                                 </div>

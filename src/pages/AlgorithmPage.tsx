@@ -1,6 +1,8 @@
 import { useParams, Navigate } from "react-router-dom";
+
 import BubbleSortPage from "@pages/BubbleSortPage";
 import BinarySearchPage from "@pages/BinarySearchPage";
+import LinearSearchPage from "@pages/LinearSearchPage";
 
 const AlgorithmPage = () => {
   const { categoryId, algorithmId } = useParams<{
@@ -19,6 +21,8 @@ const AlgorithmPage = () => {
       return <BubbleSortPage />;
     case "binary-search":
       return <BinarySearchPage />;
+    case "linear-search":
+      return <LinearSearchPage />;
     default:
       // for unknown algorithms, redirect to category page
       return <Navigate to={`/categories/${categoryId}`} replace />;

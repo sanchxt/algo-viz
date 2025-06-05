@@ -1,16 +1,16 @@
 import { useState } from "react";
-import { Link, useParams, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Link, useParams, Navigate } from "react-router-dom";
 
 import CodeDisplay from "@components/CodeDisplay";
-import ArrayInputModal from "@components/ArrayInputModal";
-import ArrayCustomizer from "@components/ArrayCustomizer";
+import TargetCustomizer from "@components/TargetCustomizer";
 import type { Language, AlgorithmStep } from "@/types/algorithm";
 import { getCategoryById } from "@constants/algorithmCategories";
 import { usePersistedLanguage } from "@hooks/usePersistedLanguage";
-import { bubbleSortCodes } from "@/constants/sorting/bubble-sort/bubbleSortCode";
-import { bubbleSortIntuition } from "@/constants/sorting/bubble-sort/bubbleSortIntuition";
-import BubbleSortVisualizer from "@components/animation/bubble-sort/BubbleSortVisualizer";
+import SearchInputModal from "@components/animation/search/SearchInputModal";
+import { linearSearchCodes } from "@constants/search/linear-search/linearSearchCode";
+import { linearSearchIntuition } from "@constants/search/linear-search/linearSearchIntuition";
+import LinearSearchVisualizer from "@components/animation/search/linear-search/LinearSearchVisualizer";
 
 const languageLabels: Record<Language, string> = {
   cpp: "C++",
@@ -24,7 +24,7 @@ const languageLabels: Record<Language, string> = {
 
 const availableLanguages = Object.keys(languageLabels) as Language[];
 
-const BubbleSortPage = () => {
+const LinearSearchPage = () => {
   const { categoryId, algorithmId } = useParams<{
     categoryId: string;
     algorithmId: string;
@@ -46,8 +46,7 @@ const BubbleSortPage = () => {
     return <Navigate to={`/categories/${categoryId}`} replace />;
   }
 
-  // for now, we're only handle bubble sort
-  if (algorithmId !== "bubble-sort") {
+  if (algorithmId !== "linear-search") {
     return <Navigate to={`/categories/${categoryId}`} replace />;
   }
 
@@ -62,10 +61,14 @@ const BubbleSortPage = () => {
   const [currentStep, setCurrentStep] = useState<AlgorithmStep | undefined>();
   const [previousStep, setPreviousStep] = useState<AlgorithmStep | undefined>();
 
-  // array customization state
-  const [currentArray, setCurrentArray] = useState<number[]>([64, 34, 25]);
-  const [showArrayModal, setShowArrayModal] = useState(false);
+  // array and target
+  const [currentArray, setCurrentArray] = useState<number[]>([
+    64, 34, 25, 12, 22, 11, 90,
+  ]);
+  const [target, setTarget] = useState<number>(22);
+  const [showInputModal, setShowInputModal] = useState(false);
 
+  // receive highlighted lines from visualizer
   const handleStepChange = (
     highlightedLines: number[],
     stepData?: AlgorithmStep
@@ -81,22 +84,30 @@ const BubbleSortPage = () => {
     setShowVariableViewer(!showVariableViewer);
   };
 
-  const handleArrayUpdate = (newArray: number[]) => {
-    setCurrentArray(newArray);
+  const handleOpenInputModal = () => {
+    setShowInputModal(true);
   };
 
-  const handleOpenArrayModal = () => {
-    setShowArrayModal(true);
+  const handleArrayAndTargetUpdate = (
+    newArray: number[],
+    newTarget: number
+  ) => {
+    setCurrentArray(newArray);
+    setTarget(newTarget);
   };
 
   return (
     <>
-      {/* array input modal */}
-      <ArrayInputModal
-        isOpen={showArrayModal}
-        onClose={() => setShowArrayModal(false)}
-        onApplyArray={handleArrayUpdate}
+      {/* linear search input modal */}
+      <SearchInputModal
+        isOpen={showInputModal}
+        onClose={() => setShowInputModal(false)}
+        onApplyArrayAndTarget={handleArrayAndTargetUpdate}
         currentArray={currentArray}
+        currentTarget={target}
+        title="Customize Linear Search"
+        requiresSorting={false}
+        warningMessage="💡 Linear search works on any array order"
       />
 
       {/* navigation */}
@@ -162,10 +173,10 @@ const BubbleSortPage = () => {
         </motion.p>
       </motion.header>
 
-      {/* array customization */}
-      <ArrayCustomizer
-        currentArray={currentArray}
-        onOpenModal={handleOpenArrayModal}
+      {/* target and array customization */}
+      <TargetCustomizer
+        currentTarget={target}
+        onOpenModal={handleOpenInputModal}
       />
 
       {/* algorithm visualization */}
@@ -174,8 +185,9 @@ const BubbleSortPage = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.8 }}
       >
-        <BubbleSortVisualizer
+        <LinearSearchVisualizer
           initialArray={currentArray}
+          target={target}
           onStepChange={handleStepChange}
           selectedLanguage={selectedLanguage}
         />
@@ -189,9 +201,9 @@ const BubbleSortPage = () => {
         transition={{ delay: 1, duration: 0.8 }}
       >
         <CodeDisplay
-          title="Bubble Sort Implementation"
+          title="Linear Search Implementation"
           language={selectedLanguage}
-          code={bubbleSortCodes[selectedLanguage]}
+          code={linearSearchCodes[selectedLanguage]}
           highlightedLines={currentHighlightedLines}
           selectedLanguage={selectedLanguage}
           onLanguageChange={setSelectedLanguage}
@@ -201,7 +213,7 @@ const BubbleSortPage = () => {
           onToggleVariableViewer={toggleVariableViewer}
           currentStep={currentStep}
           previousStep={previousStep}
-          intuitionData={bubbleSortIntuition}
+          intuitionData={linearSearchIntuition}
         />
       </motion.section>
 
@@ -220,19 +232,19 @@ const BubbleSortPage = () => {
             <ul className="text-gray-300 space-y-2 text-[0.9rem]">
               <li className="flex items-center gap-2">
                 <span className="text-blue-400 mt-1">•</span>
-                Compare adjacent elements in the array
+                Start from the first element of the array
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-blue-400 mt-1">•</span>
-                Swap them if they are in the wrong order
+                Compare each element with the target value
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-blue-400 mt-1">•</span>
-                Repeat until no more swaps are needed
+                Move sequentially through the array
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-blue-400 mt-1">•</span>
-                Largest elements "bubble up" to the end
+                Return the index when target is found or -1 if not found
               </li>
             </ul>
           </div>
@@ -244,15 +256,15 @@ const BubbleSortPage = () => {
             <div className="space-y-3 text-[0.9rem]">
               <div>
                 <span className="text-gray-400">Time Complexity:</span>
-                <div className="text-white font-mono">O(n²)</div>
+                <div className="text-white font-mono">O(n)</div>
               </div>
               <div>
                 <span className="text-gray-400">Space Complexity:</span>
                 <div className="text-white font-mono">O(1)</div>
               </div>
               <div>
-                <span className="text-gray-400">Stability:</span>
-                <div className="text-green-400">Stable</div>
+                <span className="text-gray-400">Prerequisite:</span>
+                <div className="text-green-400">Any Array Order</div>
               </div>
             </div>
           </div>
@@ -262,4 +274,4 @@ const BubbleSortPage = () => {
   );
 };
 
-export default BubbleSortPage;
+export default LinearSearchPage;

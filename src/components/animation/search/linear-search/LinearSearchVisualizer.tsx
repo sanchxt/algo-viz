@@ -1,57 +1,56 @@
 import { motion } from "framer-motion";
 import { useState, useEffect, useCallback } from "react";
 
-import {
-  bubbleSortLineMapping,
-  BUBBLE_SORT_ALGORITHM_ID,
-} from "@/constants/sorting/bubble-sort/bubbleSortLineMapping";
 import type { AlgorithmStep, Language } from "@/types/algorithm";
-import { algorithmLineResolver } from "@utils/AlgorithmLineResolver";
-import { generateBubbleSortSteps } from "@algorithms/sorting/bubbleSort";
+import { generateLinearSearchSteps } from "@/algorithms/searching/linearSearch";
 
-import VisualizationCanvas from "./VisualizationCanvas";
-import VisualizationLegend from "./VisualizationLegend";
+import LinearSearchCanvas from "./LinearSearchCanvas";
+import LinearSearchLegend from "./LinearSearchLegend";
 import StepInformation from "@components/animation/StepInformation";
 import PlaybackControls from "@components/animation/PlaybackControls";
+import {
+  LINEAR_SEARCH_ALGORITHM_ID,
+  linearSearchLineMapping,
+} from "@constants/search/linear-search/linearSearchLineMapping";
+import { algorithmLineResolver } from "@utils/AlgorithmLineResolver";
 
-interface BubbleSortVisualizerProps {
+interface LinearSearchVisualizerProps {
   initialArray?: number[];
+  target?: number;
   speed?: number;
   onStepChange?: (highlightedLines: number[], stepData?: AlgorithmStep) => void;
   selectedLanguage?: Language;
 }
 
-const DEFAULT_INITIAL_ARRAY = [64, 34, 25];
+const DEFAULT_INITIAL_ARRAY = [64, 34, 25, 12, 22, 11, 90];
+const DEFAULT_TARGET = 22;
 const DEFAULT_SPEED = 1000;
 
-const BubbleSortVisualizer = ({
+const LinearSearchVisualizer = ({
   initialArray = DEFAULT_INITIAL_ARRAY,
+  target = DEFAULT_TARGET,
   speed = DEFAULT_SPEED,
   onStepChange,
   selectedLanguage = "javascript",
-}: BubbleSortVisualizerProps) => {
+}: LinearSearchVisualizerProps) => {
   const [steps, setSteps] = useState<AlgorithmStep[]>([]);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
-  const [arrayForSort, setArrayForSort] = useState<number[]>([]);
   const [playbackSpeed, setPlaybackSpeed] = useState(1); // 1 = normal speed
 
   // register line mapping on component mount
   useEffect(() => {
     algorithmLineResolver.registerAlgorithm(
-      BUBBLE_SORT_ALGORITHM_ID,
-      bubbleSortLineMapping
+      LINEAR_SEARCH_ALGORITHM_ID,
+      linearSearchLineMapping
     );
   }, []);
 
+  // generate linear search steps when array or target changes
   useEffect(() => {
-    setArrayForSort([...initialArray]);
-  }, [initialArray]);
-
-  useEffect(() => {
-    if (arrayForSort.length > 0) {
-      const bubbleSortSteps = generateBubbleSortSteps(arrayForSort);
-      setSteps(bubbleSortSteps);
+    if (initialArray.length > 0) {
+      const linearSearchSteps = generateLinearSearchSteps(initialArray, target);
+      setSteps(linearSearchSteps);
       setCurrentStepIndex(0);
       setIsAutoPlaying(false);
     } else {
@@ -59,16 +58,28 @@ const BubbleSortVisualizer = ({
       setCurrentStepIndex(0);
       setIsAutoPlaying(false);
     }
-  }, [arrayForSort]);
+  }, [initialArray, target]);
 
   // handle step changes and line highlighting
   useEffect(() => {
     if (steps.length > 0 && steps[currentStepIndex] && onStepChange) {
       const currentStep = steps[currentStepIndex];
 
+      // handle context-specific line highlighting
+      let stepKey: string = currentStep.stepType;
+
+      // handle specific return cases based on found status
+      if (currentStep.stepType === "return" && currentStep.variables) {
+        if (currentStep.variables.found === true) {
+          stepKey = "return_found";
+        } else if (currentStep.variables.found === false) {
+          stepKey = "return_not_found";
+        }
+      }
+
       const highlightedLines = algorithmLineResolver.getHighlightedLines(
-        BUBBLE_SORT_ALGORITHM_ID,
-        currentStep.stepType,
+        LINEAR_SEARCH_ALGORITHM_ID,
+        stepKey as any,
         selectedLanguage,
         currentStep.stepContext
       );
@@ -108,7 +119,7 @@ const BubbleSortVisualizer = ({
 
   const toggleAutoPlay = useCallback(() => {
     if (currentStepIndex >= steps.length - 1) {
-      // if at the end restart from beginning
+      // if at the end, restart from beginning
       setCurrentStepIndex(0);
       setIsAutoPlaying(true);
     } else {
@@ -125,7 +136,7 @@ const BubbleSortVisualizer = ({
     setPlaybackSpeed(newSpeed);
   };
 
-  // loading
+  // loading state
   if (steps.length === 0 || !steps[currentStepIndex]) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -172,10 +183,10 @@ const BubbleSortVisualizer = ({
           transition={{ delay: 0.3, duration: 0.6 }}
         >
           <h2 className="text-4xl font-bold text-white mb-3">
-            Bubble Sort Visualization
+            Linear Search Visualization
           </h2>
           <p className="text-gray-300 text-lg font-medium">
-            Watch the elegant dance of comparison and swapping
+            Check each element sequentially until target is found
           </p>
         </motion.div>
 
@@ -193,11 +204,18 @@ const BubbleSortVisualizer = ({
         />
 
         {/* visualization canvas */}
-        <VisualizationCanvas
-          currentStep={currentStep}
-          arrayForSort={arrayForSort}
-          speed={speed}
-        />
+        <motion.div
+          className="mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.6 }}
+        >
+          <LinearSearchCanvas
+            currentStep={currentStep}
+            initialArray={initialArray}
+            target={target}
+          />
+        </motion.div>
 
         {/* step information */}
         <StepInformation
@@ -207,33 +225,57 @@ const BubbleSortVisualizer = ({
           isAutoPlaying={isAutoPlaying}
           variableConfig={[
             {
-              key: "pass",
-              label: "Pass",
+              key: "currentIndex",
+              label: "Current Index",
               color: "blue",
-              getValue: (vars) => (vars.outerLoop || 0) + 1,
-              condition: (vars) => vars.outerLoop !== undefined,
+              getValue: (vars) => vars.currentIndex ?? "N/A",
+              condition: (vars) => vars.currentIndex !== undefined,
             },
             {
-              key: "totalSwaps",
-              label: "Total Swaps",
+              key: "elementsChecked",
+              label: "Elements Checked",
               color: "emerald",
-              getValue: (vars) => vars.swaps || 0,
+              getValue: (vars) => Math.max(0, (vars.currentIndex ?? 0) + 1),
+              condition: (vars) =>
+                vars.currentIndex !== undefined && vars.currentIndex >= 0,
             },
             {
-              key: "swapsInPass",
-              label: "Swaps in Pass",
+              key: "elementsRemaining",
+              label: "Elements Remaining",
+              color: "amber",
+              getValue: (vars) => {
+                const totalLength = vars.length ?? 0;
+                const currentIdx = vars.currentIndex ?? -1;
+                return Math.max(0, totalLength - currentIdx - 1);
+              },
+              condition: (vars) =>
+                vars.currentIndex !== undefined && vars.length !== undefined,
+            },
+            {
+              key: "currentElement",
+              label: "Current Element",
               color: "purple",
-              getValue: (vars) => vars.swapsInPass || 0,
-              condition: (vars) => vars.swapsInPass !== undefined,
+              getValue: (vars) => vars.currentElement ?? "N/A",
+              condition: (vars) => vars.currentElement !== undefined,
+            },
+            {
+              key: "foundStatus",
+              label: "Status",
+              color: "cyan",
+              getValue: (vars) => {
+                if (vars.found === true) return "Found!";
+                if (vars.found === false) return "Not Found";
+                return "Searching...";
+              },
             },
           ]}
         />
 
         {/* legend */}
-        <VisualizationLegend />
+        <LinearSearchLegend />
       </motion.div>
     </div>
   );
 };
 
-export default BubbleSortVisualizer;
+export default LinearSearchVisualizer;

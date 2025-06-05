@@ -1,4 +1,4 @@
-import { Lightbulb, Eye, Menu, Code } from "lucide-react";
+import { Lightbulb, Eye, Code } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import type { Language } from "@/types/algorithm";
@@ -50,13 +50,6 @@ const MobileMenu = ({
 
   return (
     <div className="sm:hidden relative">
-      <button
-        onClick={() => onClose()}
-        className="flex items-center justify-center w-10 h-10 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/15 transition-colors duration-200"
-      >
-        <Menu size={18} />
-      </button>
-
       <AnimatePresence>
         {isOpen && (
           <motion.div
