@@ -104,6 +104,7 @@ const BinarySearchCanvas = ({
           Searching for: {target}
         </p>
       </motion.div>
+
       {/* array visualization */}
       <motion.div
         className="flex items-end justify-center gap-3 h-80 relative z-10"
@@ -141,26 +142,13 @@ const BinarySearchCanvas = ({
               }}
               className="relative group"
             >
-              {/* search range indicators */}
               {inSearchRange && (
-                <motion.div
-                  className="absolute -inset-1 bg-gradient-to-t from-yellow-400/20 to-transparent rounded-xl blur-sm"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 0.6 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                />
+                <div className="absolute -inset-1 bg-gradient-to-t from-yellow-400/40 to-transparent rounded-xl blur-sm" />
               )}
 
               {/* middle element glow effect */}
               {isMidElement && (
-                <motion.div
-                  className="absolute -inset-2 bg-gradient-to-t from-red-400/30 to-transparent rounded-xl blur-md"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 0.8, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                />
+                <div className="absolute -inset-2 bg-gradient-to-t from-red-400/55 to-transparent rounded-xl blur-md" />
               )}
 
               {/* found target sparkle effect */}
@@ -236,29 +224,6 @@ const BinarySearchCanvas = ({
           );
         })}
       </motion.div>
-      {/* search range visualization */}
-      {/* {currentStep.variables && (
-        <motion.div
-          className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex items-center gap-4 text-sm text-gray-300 mt-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <div className="flex items-center gap-2 text-sm">
-            <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-            <span>
-              Search Range: [{currentStep.variables.left},{" "}
-              {currentStep.variables.right}]
-            </span>
-          </div>
-          {currentStep.variables.mid !== undefined && (
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-              <span>Mid: {currentStep.variables.mid}</span>
-            </div>
-          )}
-        </motion.div>
-      )} */}
     </div>
   );
 };
