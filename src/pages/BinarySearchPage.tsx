@@ -35,7 +35,7 @@ const BinarySearchPage = () => {
     return <Navigate to="/" replace />;
   }
 
-  // Validate that the algorithm exists in the category
+  // validate that the algorithm exists in the category
   const category = getCategoryById(categoryId);
   if (!category) {
     return <Navigate to="/" replace />;
@@ -46,7 +46,6 @@ const BinarySearchPage = () => {
     return <Navigate to={`/categories/${categoryId}`} replace />;
   }
 
-  // For now, we're only handling binary search
   if (algorithmId !== "binary-search") {
     return <Navigate to={`/categories/${categoryId}`} replace />;
   }
@@ -62,14 +61,14 @@ const BinarySearchPage = () => {
   const [currentStep, setCurrentStep] = useState<AlgorithmStep | undefined>();
   const [previousStep, setPreviousStep] = useState<AlgorithmStep | undefined>();
 
-  // Array and target customization state
+  // array and target
   const [currentArray, setCurrentArray] = useState<number[]>([
     2, 5, 8, 12, 16, 23, 38, 45,
   ]);
   const [target, setTarget] = useState<number>(3);
   const [showInputModal, setShowInputModal] = useState(false);
 
-  // Simple handleStepChange - just receives highlighted lines from visualizer
+  // receive highlighted lines from visualizer
   const handleStepChange = (
     highlightedLines: number[],
     stepData?: AlgorithmStep
@@ -99,7 +98,7 @@ const BinarySearchPage = () => {
 
   return (
     <>
-      {/* Binary search input modal */}
+      {/* binary search input modal */}
       <BinarySearchInputModal
         isOpen={showInputModal}
         onClose={() => setShowInputModal(false)}
@@ -108,7 +107,7 @@ const BinarySearchPage = () => {
         currentTarget={target}
       />
 
-      {/* Navigation */}
+      {/* navigation */}
       <motion.nav
         className="mb-8"
         initial={{ opacity: 0, y: -20 }}
@@ -138,7 +137,7 @@ const BinarySearchPage = () => {
         </div>
       </motion.nav>
 
-      {/* Header */}
+      {/* header */}
       <motion.header
         className="text-center mb-12"
         initial={{ opacity: 0, y: -30 }}
@@ -171,13 +170,13 @@ const BinarySearchPage = () => {
         </motion.p>
       </motion.header>
 
-      {/* Target and array customization */}
+      {/* target and array customization */}
       <TargetCustomizer
         currentTarget={target}
         onOpenModal={handleOpenInputModal}
       />
 
-      {/* Algorithm visualization */}
+      {/* algorithm visualization */}
       <motion.main
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -215,7 +214,7 @@ const BinarySearchPage = () => {
         />
       </motion.section>
 
-      {/* Algorithm info */}
+      {/* algorithm info */}
       <motion.section
         className="mt-16 max-w-6xl mx-auto"
         initial={{ opacity: 0, y: 30 }}
