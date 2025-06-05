@@ -65,7 +65,7 @@ const BinarySearchPage = () => {
   const [currentArray, setCurrentArray] = useState<number[]>([
     2, 5, 8, 12, 16, 23, 38, 45,
   ]);
-  const [target, setTarget] = useState<number>(3);
+  const [target, setTarget] = useState<number>(8);
   const [showInputModal, setShowInputModal] = useState(false);
 
   // receive highlighted lines from visualizer
