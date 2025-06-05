@@ -1,4 +1,4 @@
-import { Lightbulb, Eye, Menu, Code } from "lucide-react";
+import { Lightbulb, Eye, Code } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import type { Language } from "@/types/algorithm";
