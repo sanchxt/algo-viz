@@ -1,8 +1,8 @@
 import { useParams, Navigate } from "react-router-dom";
 
-import BubbleSortPage from "@pages/BubbleSortPage";
-import BinarySearchPage from "@pages/BinarySearchPage";
-import LinearSearchPage from "@pages/LinearSearchPage";
+import BubbleSortPage from "@pages/sorting/BubbleSortPage";
+import BinarySearchPage from "@pages/searching/BinarySearchPage";
+import LinearSearchPage from "@pages/searching/LinearSearchPage";
 
 const AlgorithmPage = () => {
   const { categoryId, algorithmId } = useParams<{
