@@ -12,7 +12,10 @@ export type StepType =
   | "tree_traversal"
   | "graph_visit"
   | "no_swap"
-  | "pass_complete";
+  | "pass_complete"
+  | "pointer_initialization"
+  | "pointer_move_left"
+  | "pointer_move_right";
 
 export interface StepContext {
   loopType?: "outer" | "inner" | "while" | "recursive";
@@ -37,7 +40,7 @@ export interface AlgorithmStep {
 export interface Algorithm {
   id: string;
   name: string;
-  category: "sorting" | "search" | "trees";
+  category: "sorting" | "search" | "trees" | "sliding-window";
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   description: string;
 }
