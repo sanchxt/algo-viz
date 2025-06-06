@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
 
+import { AlgorithmCard } from "@/components/AlgorithmCard";
 import { algorithmCategories } from "@/constants/algorithmCategories";
 
 const HomePage = () => {
@@ -14,7 +14,7 @@ const HomePage = () => {
         transition={{ duration: 1, ease: "easeOut" }}
       >
         <motion.h1
-          className="text-7xl font-bold mb-6 bg-gradient-to-r from-[rgb(var(--color-text-white))] via-blue-100 to-purple-100 bg-clip-text text-transparent"
+          className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-[rgb(var(--color-text-white))] via-blue-100 to-purple-100 bg-clip-text text-transparent py-3"
           animate={{
             backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
           }}
@@ -30,7 +30,7 @@ const HomePage = () => {
           AlgoViz
         </motion.h1>
         <motion.p
-          className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed font-medium"
+          className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed font-medium"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.8 }}
@@ -84,85 +84,13 @@ const HomePage = () => {
           </motion.h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {algorithmCategories.map((category, index) => {
-              const hasAlgorithms = category.algorithms.length > 0;
-              const isClickable = hasAlgorithms;
-
-              return (
-                <motion.div
-                  key={category.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.2 + index * 0.1, duration: 0.6 }}
-                  whileHover={isClickable ? { scale: 1.02, y: -5 } : {}}
-                  className="group"
-                >
-                  {isClickable ? (
-                    <Link to={`/categories/${category.id}`}>
-                      <div
-                        className={`backdrop-blur-xl bg-gradient-to-br ${category.color.gradient} border ${category.color.border} rounded-2xl p-6 hover:bg-white/15 transition-all duration-300 shadow-xl h-full`}
-                      >
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="text-3xl">{category.icon}</div>
-                          <div
-                            className={`px-2 py-1 bg-white/10 ${category.color.text} rounded-full text-xs font-medium border border-white/20`}
-                          >
-                            {category.algorithms.length} algorithm
-                            {category.algorithms.length !== 1 ? "s" : ""}
-                          </div>
-                        </div>
-
-                        <h3 className="text-lg font-semibold text-white mb-3">
-                          {category.name}
-                        </h3>
-
-                        <p className="text-gray-300 text-sm leading-relaxed mb-4 line-clamp-3">
-                          {category.description}
-                        </p>
-
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-400 font-medium">
-                            Ready to explore
-                          </span>
-                          <motion.div
-                            className="text-white group-hover:translate-x-1 transition-transform"
-                            whileHover={{ x: 4 }}
-                          >
-                            →
-                          </motion.div>
-                        </div>
-                      </div>
-                    </Link>
-                  ) : (
-                    <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6 opacity-50 cursor-not-allowed h-full">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="text-3xl grayscale">
-                          {category.icon}
-                        </div>
-                        <div className="px-2 py-1 bg-white/5 text-gray-500 rounded-full text-xs font-medium border border-white/10">
-                          Coming Soon
-                        </div>
-                      </div>
-
-                      <h3 className="text-lg font-semibold text-gray-400 mb-3">
-                        {category.name}
-                      </h3>
-
-                      <p className="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-3">
-                        {category.description}
-                      </p>
-
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-500 font-medium">
-                          Under development
-                        </span>
-                        <span className="text-gray-500">⏳</span>
-                      </div>
-                    </div>
-                  )}
-                </motion.div>
-              );
-            })}
+            {algorithmCategories.map((category, index) => (
+              <AlgorithmCard
+                key={category.id}
+                category={category}
+                index={index}
+              />
+            ))}
           </div>
 
           {/* additional info section */}
