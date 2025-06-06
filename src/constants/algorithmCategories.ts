@@ -76,7 +76,16 @@ export const algorithmCategories: AlgorithmCategory[] = [
       border: "border-purple-400/30",
       text: "text-purple-300",
     },
-    algorithms: [],
+    algorithms: [
+      {
+        id: "two-sum",
+        name: "Two Sum (Two Pointers)",
+        category: "sliding-window",
+        difficulty: "Beginner",
+        description:
+          "Find two numbers in a sorted array that add up to a specific target using the efficient two pointers technique.",
+      },
+    ],
   },
   {
     id: "strings",
