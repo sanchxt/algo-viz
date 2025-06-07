@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useState, useEffect, useCallback } from "react";
 
-import type { AlgorithmStep, Language } from "@/types/algorithm";
+import type { EnhancedAlgorithmStep, Language } from "@/types/algorithm";
 import { generateLinearSearchSteps } from "@/algorithms/searching/linearSearch";
 
 import LinearSearchCanvas from "./LinearSearchCanvas";
@@ -18,7 +18,10 @@ interface LinearSearchVisualizerProps {
   initialArray?: number[];
   target?: number;
   speed?: number;
-  onStepChange?: (highlightedLines: number[], stepData?: AlgorithmStep) => void;
+  onStepChange?: (
+    highlightedLines: number[],
+    stepData?: EnhancedAlgorithmStep
+  ) => void;
   selectedLanguage?: Language;
 }
 
@@ -33,7 +36,7 @@ const LinearSearchVisualizer = ({
   onStepChange,
   selectedLanguage = "javascript",
 }: LinearSearchVisualizerProps) => {
-  const [steps, setSteps] = useState<AlgorithmStep[]>([]);
+  const [steps, setSteps] = useState<EnhancedAlgorithmStep[]>([]);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1); // 1 = normal speed
@@ -88,9 +91,7 @@ const LinearSearchVisualizer = ({
     }
   }, [currentStepIndex, steps, selectedLanguage, onStepChange]);
 
-  const actualSpeed = speed / playbackSpeed; // (higher playbackSpeed = faster)
-
-  // auto-play effect
+  // auto-play
   useEffect(() => {
     if (
       !isAutoPlaying ||
@@ -100,12 +101,21 @@ const LinearSearchVisualizer = ({
       return;
     }
 
+    // use timing from the current step if available, but apply playback speed multiplier
+    const currentStep = steps[currentStepIndex];
+    const baseDuration = currentStep.timing?.duration || speed;
+    const baseDelay = currentStep.timing?.delay || 0;
+
+    // apply playback speed: higher playbackSpeed = faster
+    const adjustedDuration = baseDuration / playbackSpeed;
+    const adjustedDelay = baseDelay / playbackSpeed;
+
     const timer = setTimeout(() => {
       setCurrentStepIndex((prev) => prev + 1);
-    }, actualSpeed);
+    }, adjustedDuration + adjustedDelay);
 
     return () => clearTimeout(timer);
-  }, [currentStepIndex, steps, actualSpeed, isAutoPlaying]);
+  }, [currentStepIndex, steps, speed, isAutoPlaying, playbackSpeed]);
 
   // control functions
   const goToPreviousStep = useCallback(() => {
