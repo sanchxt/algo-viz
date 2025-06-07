@@ -15,7 +15,14 @@ export type StepType =
   | "pass_complete"
   | "pointer_initialization"
   | "pointer_move_left"
-  | "pointer_move_right";
+  | "pointer_move_right"
+  // New string manipulation step types
+  | "string_iteration"
+  | "character_access"
+  | "frequency_count"
+  | "hash_map_comparison"
+  | "hash_map_creation"
+  | "string_comparison";
 
 export interface StepContext {
   loopType?: "outer" | "inner" | "while" | "recursive" | "string_iteration";
@@ -92,18 +99,6 @@ export interface EnhancedAlgorithmStep {
     duration?: number; // animation duration in ms
     delay?: number; // delay before step in ms
   };
-}
-
-export interface AlgorithmStep {
-  id: number;
-  arrayState: number[];
-  highlightedIndices: number[];
-  compareIndices?: number[];
-  swapIndices?: number[];
-  stepType: StepType;
-  stepContext?: StepContext;
-  explanation: string;
-  variables?: Record<string, any>;
 }
 
 export interface Algorithm {

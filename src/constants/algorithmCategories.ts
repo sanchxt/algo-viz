@@ -98,7 +98,17 @@ export const algorithmCategories: AlgorithmCategory[] = [
       border: "border-yellow-400/30",
       text: "text-yellow-300",
     },
-    algorithms: [],
+    algorithms: [
+      {
+        id: "anagram-detection",
+        name: "Anagram Detection",
+        category: "strings",
+        difficulty: "Beginner",
+        description:
+          "Efficiently determine if two strings are anagrams by counting character frequencies using hash maps.",
+        dataStructureType: "mixed",
+      },
+    ],
   },
   {
     id: "linked-lists",

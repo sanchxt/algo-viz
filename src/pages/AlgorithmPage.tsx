@@ -4,6 +4,7 @@ import BubbleSortPage from "@pages/sorting/BubbleSortPage";
 import BinarySearchPage from "@pages/searching/BinarySearchPage";
 import LinearSearchPage from "@pages/searching/LinearSearchPage";
 import TwoPointersPage from "@pages/two-pointers/TwoPointersPage";
+import AnagramDetectionPage from "@pages/strings/AnagramDetectionPage";
 
 const AlgorithmPage = () => {
   const { categoryId, algorithmId } = useParams<{
@@ -26,6 +27,8 @@ const AlgorithmPage = () => {
       return <LinearSearchPage />;
     case "two-sum":
       return <TwoPointersPage />;
+    case "anagram-detection":
+      return <AnagramDetectionPage />;
     default:
       // for unknown algorithms, redirect to category page
       return <Navigate to={`/categories/${categoryId}`} replace />;
