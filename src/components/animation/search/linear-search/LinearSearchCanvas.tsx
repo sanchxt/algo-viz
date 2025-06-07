@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
-import type { AlgorithmStep } from "@/types/algorithm";
+import type { EnhancedAlgorithmStep } from "@/types/algorithm";
 
 interface LinearSearchCanvasProps {
-  currentStep: AlgorithmStep;
+  currentStep: EnhancedAlgorithmStep;
   initialArray: number[];
   target: number;
   speed?: number;
@@ -13,31 +13,49 @@ const LinearSearchCanvas = ({
   initialArray,
   target,
 }: LinearSearchCanvasProps) => {
-  const maxValue = Math.max(
-    ...(initialArray.length > 0 ? initialArray : [1]),
-    1
-  );
+  const arrayData =
+    currentStep.dataStructures.searchArray?.data || initialArray;
+  const maxValue = Math.max(...(arrayData.length > 0 ? arrayData : [1]), 1);
 
-  const getBarGradient = (index: number, value: number): string => {
-    const variables = currentStep.variables;
-    const currentIndex = variables?.currentIndex ?? -1;
+  // helper functions to extract highlighting information
+  const getHighlightsByStyle = (style: string): number[] => {
+    const highlights = currentStep.highlights.searchArray || [];
+    const matching = highlights.find((h) => h.style === style);
+    return matching?.values || [];
+  };
+
+  const getCurrentIndices = (): number[] => getHighlightsByStyle("current");
+  const getCompareIndices = (): number[] => getHighlightsByStyle("compare");
+  const getVisitedIndices = (): number[] => getHighlightsByStyle("visited");
+  const getMatchedIndices = (): number[] => getHighlightsByStyle("match");
+
+  const getBarGradient = (index: number): string => {
+    const currentIndices = getCurrentIndices();
+    const compareIndices = getCompareIndices();
+    const visitedIndices = getVisitedIndices();
+    const matchedIndices = getMatchedIndices();
 
     // check if this is the target value and found
-    if (value === target && variables?.found) {
+    if (matchedIndices.includes(index)) {
       return "from-[rgb(var(--color-accent-400))] via-[rgb(var(--color-accent-500))] to-[rgb(var(--color-accent-600))]";
     }
 
     // check if this is the current element being examined
-    if (index === currentIndex) {
+    if (currentIndices.includes(index)) {
       return "from-[rgb(var(--color-danger-400))] via-[rgb(var(--color-danger-500))] to-[rgb(var(--color-danger-600))]";
     }
 
-    // check if this element has been processed (index < currentIndex)
-    if (index < currentIndex) {
+    // check if this element is being compared
+    if (compareIndices.includes(index)) {
+      return "from-[rgb(var(--color-warning-400))] via-[rgb(var(--color-warning-500))] to-[rgb(var(--color-warning-600))]";
+    }
+
+    // check if this element has been processed (visited)
+    if (visitedIndices.includes(index)) {
       return "from-gray-400 via-gray-500 to-gray-600";
     }
 
-    // unprocessed elements (index > currentIndex)
+    // unprocessed elements (neutral/default)
     return "from-[rgb(var(--color-warning-400))] via-[rgb(var(--color-warning-500))] to-[rgb(var(--color-warning-600))]";
   };
 
@@ -46,17 +64,23 @@ const LinearSearchCanvas = ({
   };
 
   const isCurrentElement = (index: number): boolean => {
-    const currentIndex = currentStep.variables?.currentIndex ?? -1;
-    return index === currentIndex;
+    const currentIndices = getCurrentIndices();
+    return currentIndices.includes(index);
+  };
+
+  const isCompareElement = (index: number): boolean => {
+    const compareIndices = getCompareIndices();
+    return compareIndices.includes(index);
   };
 
   const isProcessed = (index: number): boolean => {
-    const currentIndex = currentStep.variables?.currentIndex ?? -1;
-    return index < currentIndex;
+    const visitedIndices = getVisitedIndices();
+    return visitedIndices.includes(index);
   };
 
-  const isFound = (value: number): boolean => {
-    return value === target && currentStep.variables?.found;
+  const isFound = (index: number): boolean => {
+    const matchedIndices = getMatchedIndices();
+    return matchedIndices.includes(index);
   };
 
   const containerVariants = {
@@ -71,7 +95,7 @@ const LinearSearchCanvas = ({
   };
 
   // bar width calculation
-  const numBars = initialArray.length;
+  const numBars = arrayData.length;
   const gap = 12;
   const containerPadding = 64;
   const estimatedContainerWidth =
@@ -104,10 +128,11 @@ const LinearSearchCanvas = ({
         animate="visible"
         layout
       >
-        {initialArray.map((value, index) => {
+        {arrayData.map((value: number, index: number) => {
           const isCurrent = isCurrentElement(index);
+          const isComparing = isCompareElement(index);
           const isProcessedElement = isProcessed(index);
-          const isFoundElement = isFound(value);
+          const isFoundElement = isFound(index);
 
           return (
             <motion.div
@@ -118,7 +143,7 @@ const LinearSearchCanvas = ({
               variants={{
                 hidden: { opacity: 0, y: 30, scale: 0.9 },
                 visible: {
-                  opacity: isProcessedElement ? 0.6 : 1,
+                  opacity: isProcessedElement && !isFoundElement ? 0.6 : 1,
                   y: 0,
                   scale: 1,
                   transition: { type: "spring", stiffness: 120, damping: 12 },
@@ -134,7 +159,7 @@ const LinearSearchCanvas = ({
               className="relative group"
             >
               {/* current element glow effect */}
-              {isCurrent && (
+              {(isCurrent || isComparing) && (
                 <div className="absolute -inset-2 bg-gradient-to-t from-red-400/55 to-transparent rounded-xl blur-md" />
               )}
 
@@ -160,27 +185,27 @@ const LinearSearchCanvas = ({
               <motion.div
                 className={`
                   relative flex flex-col items-center justify-end rounded-xl shadow-lg
-                  bg-gradient-to-t ${getBarGradient(index, value)}
+                  bg-gradient-to-t ${getBarGradient(index)}
                   border border-white/20 backdrop-blur-sm
-                  ${isProcessedElement ? "opacity-60" : ""}
+                  ${isProcessedElement && !isFoundElement ? "opacity-60" : ""}
                 `}
                 style={{
                   width: `${barWidth}px`,
                   height: `${getBarHeight(value)}px`,
                 }}
                 animate={{
-                  scale: isCurrent ? 1.05 : 1,
-                  y: isCurrent ? -5 : 0,
+                  scale: isCurrent || isComparing ? 1.05 : 1,
+                  y: isCurrent || isComparing ? -5 : 0,
                 }}
                 transition={{ duration: 0.3 }}
               >
                 <motion.span
                   className={`text-white font-semibold text-sm mb-1.5 drop-shadow-md ${
-                    isCurrent ? "text-lg" : ""
+                    isCurrent || isComparing ? "text-lg" : ""
                   }`}
                   animate={{
-                    scale: isCurrent ? 1.2 : 1,
-                    fontWeight: isCurrent ? 700 : 600,
+                    scale: isCurrent || isComparing ? 1.2 : 1,
+                    fontWeight: isCurrent || isComparing ? 700 : 600,
                   }}
                   transition={{ duration: 0.2 }}
                 >
@@ -190,7 +215,9 @@ const LinearSearchCanvas = ({
                 {/* index label */}
                 <motion.span
                   className="absolute -bottom-6 text-xs text-gray-300 font-medium"
-                  animate={{ opacity: isProcessedElement ? 0.4 : 1 }}
+                  animate={{
+                    opacity: isProcessedElement && !isFoundElement ? 0.4 : 1,
+                  }}
                 >
                   {index}
                 </motion.span>
@@ -204,8 +231,17 @@ const LinearSearchCanvas = ({
                   </div>
                 )}
 
+                {/* COMPARING label for compare step */}
+                {isComparing && !isCurrent && (
+                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2">
+                    <div className="text-orange-400 text-sm font-bold bg-white/20 rounded-lg px-3 py-1.5 border border-orange-400/30">
+                      COMPARE
+                    </div>
+                  </div>
+                )}
+
                 {/* processing indicator arrow */}
-                {isCurrent && (
+                {(isCurrent || isComparing) && (
                   <motion.div
                     className="absolute -top-16 left-1/2 transform -translate-x-1/2 text-red-400 text-xl"
                     animate={{
@@ -227,23 +263,6 @@ const LinearSearchCanvas = ({
           );
         })}
       </motion.div>
-
-      {/* progress indicator */}
-      {currentStep.variables && currentStep.variables.currentIndex >= 0 && (
-        <motion.div
-          className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-center"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.4 }}
-        >
-          <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-lg px-4 py-2">
-            <p className="text-white text-sm font-medium">
-              Progress: {Math.max(0, currentStep.variables.currentIndex)} /{" "}
-              {initialArray.length} elements checked
-            </p>
-          </div>
-        </motion.div>
-      )}
     </div>
   );
 };

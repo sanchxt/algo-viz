@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useState, useEffect, useCallback } from "react";
 
-import type { AlgorithmStep, Language } from "@/types/algorithm";
+import type { EnhancedAlgorithmStep, Language } from "@/types/algorithm";
 import { generateTwoSumSteps } from "@/algorithms/two-pointers/twoSum";
 
 import TwoPointersCanvas from "./TwoPointersCanvas";
@@ -18,11 +18,14 @@ interface TwoPointersVisualizerProps {
   initialArray?: number[];
   target?: number;
   speed?: number;
-  onStepChange?: (highlightedLines: number[], stepData?: AlgorithmStep) => void;
+  onStepChange?: (
+    highlightedLines: number[],
+    stepData?: EnhancedAlgorithmStep
+  ) => void;
   selectedLanguage?: Language;
 }
 
-const DEFAULT_INITIAL_ARRAY = [2, 3, 6, 7, 8, 11, 15, 17]; // pre-sorted
+const DEFAULT_INITIAL_ARRAY = [2, 3, 6, 7, 8, 11, 15, 17];
 const DEFAULT_TARGET = 9;
 const DEFAULT_SPEED = 1000;
 
@@ -33,7 +36,7 @@ const TwoPointersVisualizer = ({
   onStepChange,
   selectedLanguage = "javascript",
 }: TwoPointersVisualizerProps) => {
-  const [steps, setSteps] = useState<AlgorithmStep[]>([]);
+  const [steps, setSteps] = useState<EnhancedAlgorithmStep[]>([]);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
   const [sortedArray, setSortedArray] = useState<number[]>([]);
@@ -95,9 +98,7 @@ const TwoPointersVisualizer = ({
     }
   }, [currentStepIndex, steps, selectedLanguage, onStepChange]);
 
-  const actualSpeed = speed / playbackSpeed; // (higher playbackSpeed = faster)
-
-  // auto-play effect
+  // auto-play
   useEffect(() => {
     if (
       !isAutoPlaying ||
@@ -107,12 +108,21 @@ const TwoPointersVisualizer = ({
       return;
     }
 
+    // use timing from the current step if available, but apply playback speed multiplier
+    const currentStep = steps[currentStepIndex];
+    const baseDuration = currentStep.timing?.duration || speed;
+    const baseDelay = currentStep.timing?.delay || 0;
+
+    // apply playback speed: higher playbackSpeed = faster
+    const adjustedDuration = baseDuration / playbackSpeed;
+    const adjustedDelay = baseDelay / playbackSpeed;
+
     const timer = setTimeout(() => {
       setCurrentStepIndex((prev) => prev + 1);
-    }, actualSpeed);
+    }, adjustedDuration + adjustedDelay);
 
     return () => clearTimeout(timer);
-  }, [currentStepIndex, steps, actualSpeed, isAutoPlaying]);
+  }, [currentStepIndex, steps, speed, isAutoPlaying, playbackSpeed]);
 
   // control functions
   const goToPreviousStep = useCallback(() => {
@@ -236,14 +246,6 @@ const TwoPointersVisualizer = ({
               label: "Pointers [L,R]",
               color: "blue",
               getValue: (vars) => `[${vars.left || 0}, ${vars.right || 0}]`,
-              condition: (vars) =>
-                vars.left !== undefined && vars.right !== undefined,
-            },
-            {
-              key: "currentSum",
-              label: "Current Sum",
-              color: "amber",
-              getValue: (vars) => vars.currentSum || "N/A",
               condition: (vars) => vars.currentSum !== undefined,
             },
             {

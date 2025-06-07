@@ -1,29 +1,54 @@
-import type { AlgorithmStep } from "@/types/algorithm";
+import type { EnhancedAlgorithmStep } from "@/types/algorithm";
 
 export function generateBubbleSortSteps(
   initialArray: number[]
-): AlgorithmStep[] {
-  const steps: AlgorithmStep[] = [];
+): EnhancedAlgorithmStep[] {
+  const steps: EnhancedAlgorithmStep[] = [];
   const arr = [...initialArray];
   const n = arr.length;
   let stepId = 0;
 
-  // Initialization step
+  // initialization step
   steps.push({
     id: stepId++,
-    arrayState: [...arr],
-    highlightedIndices: [],
+    dataStructures: {
+      sortArray: {
+        type: "array",
+        data: [...arr],
+        metadata: { label: "Sort Array" },
+      },
+    },
+    highlights: {
+      sortArray: [],
+    },
     stepType: "initialization",
+    stepContext: {
+      loopType: "outer",
+      operation: "read",
+      dataStructure: "array",
+    },
     explanation: "Starting Bubble Sort - initializing array length",
     variables: { n, outerLoop: 0, innerLoop: 0, swaps: 0 },
+    timing: {
+      duration: 800,
+      delay: 0,
+    },
   });
 
   for (let i = 0; i < n - 1; i++) {
     // outer loop start
     steps.push({
       id: stepId++,
-      arrayState: [...arr],
-      highlightedIndices: [],
+      dataStructures: {
+        sortArray: {
+          type: "array",
+          data: [...arr],
+          metadata: { label: "Sort Array" },
+        },
+      },
+      highlights: {
+        sortArray: [],
+      },
       stepType: "loop_start",
       stepContext: {
         loopType: "outer",
@@ -37,6 +62,10 @@ export function generateBubbleSortSteps(
         innerLoop: 0,
         swaps: steps[steps.length - 1].variables?.swaps || 0,
       },
+      timing: {
+        duration: 600,
+        delay: 100,
+      },
     });
 
     let swapsInThisPass = 0;
@@ -45,9 +74,24 @@ export function generateBubbleSortSteps(
       // inner loop start
       steps.push({
         id: stepId++,
-        arrayState: [...arr],
-        highlightedIndices: [],
-        compareIndices: [j, j + 1],
+        dataStructures: {
+          sortArray: {
+            type: "array",
+            data: [...arr],
+            metadata: { label: "Sort Array" },
+          },
+        },
+        highlights: {
+          sortArray: [
+            {
+              type: "indices",
+              values: [j, j + 1],
+              style: "highlight",
+              color: "#3b82f6",
+              intensity: "medium",
+            },
+          ],
+        },
         stepType: "loop_start",
         stepContext: {
           loopType: "inner",
@@ -64,14 +108,33 @@ export function generateBubbleSortSteps(
           swaps: steps[steps.length - 1].variables?.swaps || 0,
           swapsInPass: swapsInThisPass,
         },
+        timing: {
+          duration: 800,
+          delay: 150,
+        },
       });
 
       // comparison step
       steps.push({
         id: stepId++,
-        arrayState: [...arr],
-        highlightedIndices: [],
-        compareIndices: [j, j + 1],
+        dataStructures: {
+          sortArray: {
+            type: "array",
+            data: [...arr],
+            metadata: { label: "Sort Array" },
+          },
+        },
+        highlights: {
+          sortArray: [
+            {
+              type: "indices",
+              values: [j, j + 1],
+              style: "compare",
+              color: "#f59e0b",
+              intensity: "high",
+            },
+          ],
+        },
         stepType: "comparison",
         stepContext: {
           operation: "compare",
@@ -84,6 +147,11 @@ export function generateBubbleSortSteps(
           innerLoop: j,
           swaps: steps[steps.length - 1].variables?.swaps || 0,
           swapsInPass: swapsInThisPass,
+          comparing: [arr[j], arr[j + 1]],
+        },
+        timing: {
+          duration: 1000,
+          delay: 200,
         },
       });
 
@@ -94,9 +162,24 @@ export function generateBubbleSortSteps(
 
         steps.push({
           id: stepId++,
-          arrayState: [...arr],
-          highlightedIndices: [],
-          swapIndices: [j, j + 1],
+          dataStructures: {
+            sortArray: {
+              type: "array",
+              data: [...arr],
+              metadata: { label: "Sort Array" },
+            },
+          },
+          highlights: {
+            sortArray: [
+              {
+                type: "indices",
+                values: [j, j + 1],
+                style: "swap",
+                color: "#ef4444",
+                intensity: "high",
+              },
+            ],
+          },
           stepType: "swap",
           stepContext: {
             operation: "write",
@@ -111,15 +194,35 @@ export function generateBubbleSortSteps(
             innerLoop: j,
             swaps: (steps[steps.length - 1].variables?.swaps || 0) + 1,
             swapsInPass: swapsInThisPass,
+            swapped: [arr[j], arr[j + 1]],
+          },
+          timing: {
+            duration: 1200,
+            delay: 300,
           },
         });
       } else {
         // no swap needed
         steps.push({
           id: stepId++,
-          arrayState: [...arr],
-          highlightedIndices: [],
-          compareIndices: [j, j + 1],
+          dataStructures: {
+            sortArray: {
+              type: "array",
+              data: [...arr],
+              metadata: { label: "Sort Array" },
+            },
+          },
+          highlights: {
+            sortArray: [
+              {
+                type: "indices",
+                values: [j, j + 1],
+                style: "compare",
+                color: "#f59e0b",
+                intensity: "medium",
+              },
+            ],
+          },
           stepType: "no_swap",
           stepContext: {
             operation: "read",
@@ -132,6 +235,11 @@ export function generateBubbleSortSteps(
             innerLoop: j,
             swaps: steps[steps.length - 1].variables?.swaps || 0,
             swapsInPass: swapsInThisPass,
+            comparing: [arr[j], arr[j + 1]],
+          },
+          timing: {
+            duration: 800,
+            delay: 100,
           },
         });
       }
@@ -140,8 +248,24 @@ export function generateBubbleSortSteps(
     // pass complete - highlight the sorted element
     steps.push({
       id: stepId++,
-      arrayState: [...arr],
-      highlightedIndices: [n - i - 1],
+      dataStructures: {
+        sortArray: {
+          type: "array",
+          data: [...arr],
+          metadata: { label: "Sort Array" },
+        },
+      },
+      highlights: {
+        sortArray: [
+          {
+            type: "indices",
+            values: [n - i - 1],
+            style: "match",
+            color: "#10b981",
+            intensity: "high",
+          },
+        ],
+      },
       stepType: "pass_complete",
       stepContext: {
         passNumber: i + 1,
@@ -156,16 +280,40 @@ export function generateBubbleSortSteps(
         innerLoop: n - i - 1,
         swaps: steps[steps.length - 1].variables?.swaps || 0,
         swapsInPass: swapsInThisPass,
+        sortedPosition: n - i - 1,
+      },
+      timing: {
+        duration: 1000,
+        delay: 200,
       },
     });
   }
 
-  // algorithm completion
+  // algorithm completion - highlight all sorted elements
   steps.push({
     id: stepId++,
-    arrayState: [...arr],
-    highlightedIndices: Array.from({ length: n }, (_, i) => i),
+    dataStructures: {
+      sortArray: {
+        type: "array",
+        data: [...arr],
+        metadata: { label: "Sort Array" },
+      },
+    },
+    highlights: {
+      sortArray: [
+        {
+          type: "indices",
+          values: Array.from({ length: n }, (_, i) => i),
+          style: "match",
+          color: "#10b981",
+          intensity: "high",
+        },
+      ],
+    },
     stepType: "return",
+    stepContext: {
+      dataStructure: "array",
+    },
     explanation: "Bubble Sort completed! Array is now fully sorted.",
     variables: {
       n,
@@ -173,6 +321,11 @@ export function generateBubbleSortSteps(
       innerLoop: 0,
       swaps: steps[steps.length - 1].variables?.swaps || 0,
       swapsInPass: 0,
+      status: "completed",
+    },
+    timing: {
+      duration: 1500,
+      delay: 500,
     },
   });
 

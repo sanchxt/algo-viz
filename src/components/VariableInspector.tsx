@@ -2,19 +2,23 @@ import { useState } from "react";
 import { X, Eye, EyeOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import type { AlgorithmStep } from "@/types/algorithm";
+import type {
+  EnhancedAlgorithmStep,
+  DataStructureState,
+  HighlightInfo,
+} from "@/types/algorithm";
 
 interface VariableInspectorProps {
   isOpen: boolean;
   onClose: () => void;
-  currentStep?: AlgorithmStep;
-  previousStep?: AlgorithmStep;
+  currentStep?: EnhancedAlgorithmStep;
+  previousStep?: EnhancedAlgorithmStep;
   className?: string;
 }
 
 interface ExpandedSections {
   variables: boolean;
-  array: boolean;
+  [key: string]: boolean;
 }
 
 const VariableInspector = ({
@@ -24,16 +28,73 @@ const VariableInspector = ({
   previousStep,
   className = "",
 }: VariableInspectorProps) => {
-  const [expandedSections, setExpandedSections] = useState<ExpandedSections>({
-    variables: true,
-    array: true,
-  });
+  const getInitialExpandedSections = (): ExpandedSections => {
+    const sections: ExpandedSections = { variables: true };
+    if (currentStep?.dataStructures) {
+      Object.keys(currentStep.dataStructures).forEach((key) => {
+        sections[key] = true;
+      });
+    }
+    return sections;
+  };
 
-  const toggleSection = (section: keyof ExpandedSections) => {
+  const [expandedSections, setExpandedSections] = useState<ExpandedSections>(
+    getInitialExpandedSections()
+  );
+
+  const toggleSection = (section: string) => {
     setExpandedSections((prev) => ({
       ...prev,
       [section]: !prev[section],
     }));
+  };
+
+  // helper function to get array data from any DS
+  const getArrayData = (
+    dataStructure: DataStructureState | undefined
+  ): number[] => {
+    if (!dataStructure) return [];
+    if (dataStructure.type === "array") {
+      return dataStructure.data || [];
+    }
+    return [];
+  };
+
+  // helper function to get highlights for a specific DS
+  const getHighlightsByStyle = (
+    highlights: HighlightInfo[] | undefined,
+    style: string
+  ): number[] => {
+    if (!highlights) return [];
+    const matching = highlights.find((h) => h.style === style);
+    return matching?.values || [];
+  };
+
+  // helper function to get all highlights for a DS
+  const getAllHighlights = (
+    highlights: HighlightInfo[] | undefined
+  ): {
+    highlighted: number[];
+    compared: number[];
+    swapped: number[];
+    found: number[];
+    middle: number[];
+    searchRange: number[];
+    leftBoundary: number[];
+    rightBoundary: number[];
+    sorted: number[];
+  } => {
+    return {
+      highlighted: getHighlightsByStyle(highlights, "highlight"),
+      compared: getHighlightsByStyle(highlights, "compare"),
+      swapped: getHighlightsByStyle(highlights, "swap"),
+      found: getHighlightsByStyle(highlights, "match"),
+      middle: getHighlightsByStyle(highlights, "current"),
+      searchRange: getHighlightsByStyle(highlights, "active"),
+      leftBoundary: getHighlightsByStyle(highlights, "highlight"),
+      rightBoundary: getHighlightsByStyle(highlights, "visited"),
+      sorted: getHighlightsByStyle(highlights, "match"),
+    };
   };
 
   const variables = currentStep?.variables || {};
@@ -43,38 +104,82 @@ const VariableInspector = ({
     return variables[key] !== previousVariables[key];
   };
 
-  const hasArrayChanged = (): boolean => {
+  const hasDataStructureChanged = (key: string): boolean => {
     if (!previousStep || !currentStep) return false;
+    const currentData = getArrayData(currentStep.dataStructures[key]);
+    const previousData = getArrayData(previousStep.dataStructures[key]);
+    return JSON.stringify(currentData) !== JSON.stringify(previousData);
+  };
+
+  // get the display name for a DS
+  const getDataStructureName = (key: string): string => {
+    const commonNames: { [key: string]: string } = {
+      searchArray: "Search Array",
+      sortArray: "Sort Array",
+      array: "Array",
+      tree: "Tree",
+      graph: "Graph",
+      hashmap: "Hash Map",
+      string: "String",
+    };
+    return commonNames[key] || key.charAt(0).toUpperCase() + key.slice(1);
+  };
+
+  // get appropriate color scheme for different DS
+  const getColorScheme = (
+    key: string
+  ): { bg: string; border: string; dot: string } => {
+    const colorSchemes: {
+      [key: string]: { bg: string; border: string; dot: string };
+    } = {
+      searchArray: {
+        bg: "bg-blue-500/20",
+        border: "border-blue-400/30",
+        dot: "bg-blue-400",
+      },
+      sortArray: {
+        bg: "bg-purple-500/20",
+        border: "border-purple-400/30",
+        dot: "bg-purple-400",
+      },
+      array: {
+        bg: "bg-purple-500/20",
+        border: "border-purple-400/30",
+        dot: "bg-purple-400",
+      },
+      tree: {
+        bg: "bg-green-500/20",
+        border: "border-green-400/30",
+        dot: "bg-green-400",
+      },
+      graph: {
+        bg: "bg-cyan-500/20",
+        border: "border-cyan-400/30",
+        dot: "bg-cyan-400",
+      },
+      hashmap: {
+        bg: "bg-orange-500/20",
+        border: "border-orange-400/30",
+        dot: "bg-orange-400",
+      },
+      string: {
+        bg: "bg-pink-500/20",
+        border: "border-pink-400/30",
+        dot: "bg-pink-400",
+      },
+    };
     return (
-      JSON.stringify(currentStep.arrayState) !==
-      JSON.stringify(previousStep.arrayState)
+      colorSchemes[key] || {
+        bg: "bg-gray-500/20",
+        border: "border-gray-400/30",
+        dot: "bg-gray-400",
+      }
     );
   };
 
-  const getHighlightedLabel = (step: AlgorithmStep): string => {
-    if (
-      step.stepType === "comparison" ||
-      step.stepType === "loop_start" ||
-      step.stepType === "return_found" ||
-      (step.stepContext?.dataStructure === "array" &&
-        (step.stepType.includes("search") ||
-          step.explanation?.toLowerCase().includes("search")))
-    ) {
-      return "Current";
-    }
-
-    if (
-      step.stepType === "swap" ||
-      step.stepType === "pass_complete" ||
-      step.explanation?.toLowerCase().includes("sort")
-    ) {
-      return "Sorted";
-    }
-
-    return "Highlighted";
-  };
-
   if (!isOpen) return null;
+
+  const dataStructures = currentStep?.dataStructures || {};
 
   return (
     <AnimatePresence>
@@ -225,149 +330,211 @@ const VariableInspector = ({
                     </div>
                   </div>
 
-                  {/* array section */}
-                  <div>
-                    <button
-                      onClick={() => toggleSection("array")}
-                      className="flex items-center justify-between w-full mb-4 p-3 backdrop-blur-md bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all duration-300 hover:scale-[1.02] active:scale-95"
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                        <span className="font-semibold">Array State</span>
-                        {hasArrayChanged() && (
-                          <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
-                        )}
-                      </div>
-                      <div
-                        className={`${
-                          expandedSections.array ? "rotate-180" : "rotate-0"
-                        } transition-transform duration-200`}
-                      >
-                        {expandedSections.array ? (
-                          <EyeOff size={16} />
-                        ) : (
-                          <Eye size={16} />
-                        )}
-                      </div>
-                    </button>
+                  {Object.entries(dataStructures).map(
+                    ([structureKey, structure]) => {
+                      if (structure.type !== "array") return null; // only handle arrays for now
 
-                    <div
-                      className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                        expandedSections.array
-                          ? "max-h-[500px] opacity-100"
-                          : "max-h-0 opacity-0"
-                      }`}
-                    >
-                      <div
-                        className={`p-4 rounded-xl border transition-all duration-300 ${
-                          hasArrayChanged()
-                            ? "bg-purple-500/20 border-purple-400/30 shadow-lg shadow-purple-400/10"
-                            : "bg-white/5 border-white/10"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="text-gray-300 text-sm font-medium">
-                            Length: {currentStep.arrayState.length}
-                          </span>
-                          {hasArrayChanged() && (
-                            <span className="text-yellow-200 text-xs px-2 py-1 bg-yellow-500/20 rounded-lg border border-yellow-400/30 animate-in zoom-in duration-200">
-                              Modified
-                            </span>
-                          )}
-                        </div>
+                      const arrayData = getArrayData(structure);
+                      const highlights = currentStep.highlights[structureKey];
+                      const allHighlights = getAllHighlights(highlights);
+                      const hasChanged = hasDataStructureChanged(structureKey);
+                      const colorScheme = getColorScheme(structureKey);
+                      const displayName = getDataStructureName(structureKey);
 
-                        <div className="grid grid-cols-1 gap-2">
-                          {/* array indices */}
-                          <div className="flex gap-1 mb-1 overflow-x-auto">
-                            {currentStep.arrayState.map((_, index) => (
+                      return (
+                        <div key={structureKey}>
+                          <button
+                            onClick={() => toggleSection(structureKey)}
+                            className="flex items-center justify-between w-full mb-4 p-3 backdrop-blur-md bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all duration-300 hover:scale-[1.02] active:scale-95"
+                          >
+                            <div className="flex items-center gap-2">
                               <div
-                                key={`index-${index}`}
-                                className="min-w-[40px] flex-shrink-0 text-center text-xs text-gray-400 font-mono py-1"
-                              >
-                                [{index}]
+                                className={`w-2 h-2 ${colorScheme.dot} rounded-full`}
+                              ></div>
+                              <span className="font-semibold">
+                                {displayName}
+                              </span>
+                              {hasChanged && (
+                                <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
+                              )}
+                            </div>
+                            <div
+                              className={`${
+                                expandedSections[structureKey]
+                                  ? "rotate-180"
+                                  : "rotate-0"
+                              } transition-transform duration-200`}
+                            >
+                              {expandedSections[structureKey] ? (
+                                <EyeOff size={16} />
+                              ) : (
+                                <Eye size={16} />
+                              )}
+                            </div>
+                          </button>
+
+                          <div
+                            className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                              expandedSections[structureKey]
+                                ? "max-h-[500px] opacity-100"
+                                : "max-h-0 opacity-0"
+                            }`}
+                          >
+                            <div
+                              className={`p-4 rounded-xl border transition-all duration-300 ${
+                                hasChanged
+                                  ? `${colorScheme.bg} ${colorScheme.border} shadow-lg`
+                                  : "bg-white/5 border-white/10"
+                              }`}
+                            >
+                              <div className="flex items-center gap-2 mb-3">
+                                <span className="text-gray-300 text-sm font-medium">
+                                  Length: {arrayData.length}
+                                </span>
+                                {hasChanged && (
+                                  <span className="text-yellow-200 text-xs px-2 py-1 bg-yellow-500/20 rounded-lg border border-yellow-400/30 animate-in zoom-in duration-200">
+                                    Modified
+                                  </span>
+                                )}
                               </div>
-                            ))}
-                          </div>
 
-                          {/* array values */}
-                          <div className="flex gap-1 overflow-x-auto pb-2">
-                            {currentStep.arrayState.map((value, index) => {
-                              const isHighlighted =
-                                currentStep.highlightedIndices?.includes(index);
-                              const isComparing =
-                                currentStep.compareIndices?.includes(index);
-                              const isSwapping =
-                                currentStep.swapIndices?.includes(index);
-
-                              let bgColor = "bg-white/10";
-                              let textColor = "text-white";
-                              let borderColor = "border-white/20";
-
-                              if (isSwapping) {
-                                bgColor = "bg-red-500/30";
-                                textColor = "text-red-200";
-                                borderColor = "border-red-400/40";
-                              } else if (isComparing) {
-                                bgColor = "bg-yellow-500/30";
-                                textColor = "text-yellow-200";
-                                borderColor = "border-yellow-400/40";
-                              } else if (isHighlighted) {
-                                bgColor = "bg-green-500/30";
-                                textColor = "text-green-200";
-                                borderColor = "border-green-400/40";
-                              }
-
-                              return (
-                                <div
-                                  key={`value-${index}-${value}`}
-                                  className={`min-w-[40px] flex-shrink-0 text-center font-mono font-semibold text-sm py-2 px-1 rounded-lg border transition-all duration-200 ${bgColor} ${textColor} ${borderColor} ${
-                                    isSwapping || isComparing || isHighlighted
-                                      ? "scale-105"
-                                      : "scale-100"
-                                  } transition-all duration-150`}
-                                >
-                                  {value}
+                              <div className="grid grid-cols-1 gap-2">
+                                {/* array indices */}
+                                <div className="flex gap-1 mb-1 overflow-x-auto">
+                                  {arrayData.map((_, index) => (
+                                    <div
+                                      key={`index-${index}`}
+                                      className="min-w-[40px] flex-shrink-0 text-center text-xs text-gray-400 font-mono py-1"
+                                    >
+                                      [{index}]
+                                    </div>
+                                  ))}
                                 </div>
-                              );
-                            })}
+
+                                {/* array values */}
+                                <div className="flex gap-1 overflow-x-auto pb-2">
+                                  {arrayData.map(
+                                    (value: number, index: number) => {
+                                      const isComparing =
+                                        allHighlights.compared.includes(index);
+                                      const isSwapping =
+                                        allHighlights.swapped.includes(index);
+                                      const isFound =
+                                        allHighlights.found.includes(index);
+                                      const isSorted =
+                                        allHighlights.sorted.includes(index);
+                                      const isMiddle =
+                                        allHighlights.middle.includes(index);
+                                      const isInSearchRange =
+                                        allHighlights.searchRange.includes(
+                                          index
+                                        );
+
+                                      let bgColor = "bg-white/10";
+                                      let textColor = "text-white";
+                                      let borderColor = "border-white/20";
+
+                                      if (isFound || isSorted) {
+                                        bgColor = "bg-green-500/30";
+                                        textColor = "text-green-200";
+                                        borderColor = "border-green-400/40";
+                                      } else if (isSwapping) {
+                                        bgColor = "bg-red-500/30";
+                                        textColor = "text-red-200";
+                                        borderColor = "border-red-400/40";
+                                      } else if (isComparing || isMiddle) {
+                                        bgColor = "bg-yellow-500/30";
+                                        textColor = "text-yellow-200";
+                                        borderColor = "border-yellow-400/40";
+                                      } else if (isInSearchRange) {
+                                        bgColor = "bg-blue-500/30";
+                                        textColor = "text-blue-200";
+                                        borderColor = "border-blue-400/40";
+                                      }
+
+                                      return (
+                                        <div
+                                          key={`value-${index}-${value}`}
+                                          className={`min-w-[40px] flex-shrink-0 text-center font-mono font-semibold text-sm py-2 px-1 rounded-lg border transition-all duration-200 ${bgColor} ${textColor} ${borderColor} ${
+                                            isSwapping ||
+                                            isComparing ||
+                                            isFound ||
+                                            isSorted ||
+                                            isMiddle
+                                              ? "scale-105"
+                                              : "scale-100"
+                                          } transition-all duration-150`}
+                                        >
+                                          {value}
+                                        </div>
+                                      );
+                                    }
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* highlight status indicators */}
+                              <div className="flex flex-wrap gap-2 mt-4 text-xs">
+                                {allHighlights.found.length > 0 && (
+                                  <div className="flex items-center gap-1 px-2 py-1 bg-green-500/20 rounded-lg border border-green-400/30">
+                                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                                    <span className="text-green-200">
+                                      Found: {allHighlights.found.join(", ")}
+                                    </span>
+                                  </div>
+                                )}
+                                {allHighlights.sorted.length > 0 &&
+                                  structureKey === "sortArray" && (
+                                    <div className="flex items-center gap-1 px-2 py-1 bg-green-500/20 rounded-lg border border-green-400/30">
+                                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                                      <span className="text-green-200">
+                                        Sorted:{" "}
+                                        {allHighlights.sorted.join(", ")}
+                                      </span>
+                                    </div>
+                                  )}
+                                {allHighlights.compared.length > 0 && (
+                                  <div className="flex items-center gap-1 px-2 py-1 bg-yellow-500/20 rounded-lg border border-yellow-400/30">
+                                    <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                                    <span className="text-yellow-200">
+                                      Comparing:{" "}
+                                      {allHighlights.compared.join(", ")}
+                                    </span>
+                                  </div>
+                                )}
+                                {allHighlights.swapped.length > 0 && (
+                                  <div className="flex items-center gap-1 px-2 py-1 bg-red-500/20 rounded-lg border border-red-400/30">
+                                    <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                                    <span className="text-red-200">
+                                      Swapping:{" "}
+                                      {allHighlights.swapped.join(", ")}
+                                    </span>
+                                  </div>
+                                )}
+                                {allHighlights.middle.length > 0 && (
+                                  <div className="flex items-center gap-1 px-2 py-1 bg-yellow-500/20 rounded-lg border border-yellow-400/30">
+                                    <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                                    <span className="text-yellow-200">
+                                      Middle: {allHighlights.middle.join(", ")}
+                                    </span>
+                                  </div>
+                                )}
+                                {allHighlights.searchRange.length > 0 && (
+                                  <div className="flex items-center gap-1 px-2 py-1 bg-blue-500/20 rounded-lg border border-blue-400/30">
+                                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                                    <span className="text-blue-200">
+                                      Search Range:{" "}
+                                      {allHighlights.searchRange.join(", ")}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         </div>
-
-                        {/* array status indicators */}
-                        <div className="flex flex-wrap gap-2 mt-4 text-xs">
-                          {currentStep.compareIndices &&
-                            currentStep.compareIndices.length > 0 && (
-                              <div className="flex items-center gap-1 px-2 py-1 bg-yellow-500/20 rounded-lg border border-yellow-400/30">
-                                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                                <span className="text-yellow-200">
-                                  Comparing:{" "}
-                                  {currentStep.compareIndices.join(", ")}
-                                </span>
-                              </div>
-                            )}
-                          {currentStep.swapIndices &&
-                            currentStep.swapIndices.length > 0 && (
-                              <div className="flex items-center gap-1 px-2 py-1 bg-red-500/20 rounded-lg border border-red-400/30">
-                                <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                                <span className="text-red-200">
-                                  Swapping: {currentStep.swapIndices.join(", ")}
-                                </span>
-                              </div>
-                            )}
-                          {currentStep.highlightedIndices &&
-                            currentStep.highlightedIndices.length > 0 && (
-                              <div className="flex items-center gap-1 px-2 py-1 bg-green-500/20 rounded-lg border border-green-400/30">
-                                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                                <span className="text-green-200">
-                                  {getHighlightedLabel(currentStep)}:{" "}
-                                  {currentStep.highlightedIndices.join(", ")}
-                                </span>
-                              </div>
-                            )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                      );
+                    }
+                  )}
                 </div>
               ) : (
                 <div className="flex items-center justify-center h-64">
