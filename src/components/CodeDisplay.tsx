@@ -10,7 +10,7 @@ import CodeSyntaxHighlighter from "./CodeSyntaxHighlighter";
 import type {
   AlgorithmIntuition,
   Language,
-  AlgorithmStep,
+  EnhancedAlgorithmStep,
 } from "@/types/algorithm";
 
 interface CodeDisplayProps {
@@ -24,8 +24,8 @@ interface CodeDisplayProps {
   languageLabels?: Record<string, string>;
   showVariableViewer?: boolean;
   onToggleVariableViewer?: () => void;
-  currentStep?: AlgorithmStep;
-  previousStep?: AlgorithmStep;
+  currentStep?: EnhancedAlgorithmStep;
+  previousStep?: EnhancedAlgorithmStep;
   intuitionData?: AlgorithmIntuition;
 }
 

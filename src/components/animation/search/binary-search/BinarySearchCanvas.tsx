@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
-import type { AlgorithmStep } from "@/types/algorithm";
+import type { EnhancedAlgorithmStep } from "@/types/algorithm";
 
 interface BinarySearchCanvasProps {
-  currentStep: AlgorithmStep;
+  currentStep: EnhancedAlgorithmStep;
   initialArray: number[];
   target: number;
   speed?: number;
@@ -13,38 +13,55 @@ const BinarySearchCanvas = ({
   initialArray,
   target,
 }: BinarySearchCanvasProps) => {
-  const maxValue = Math.max(
-    ...(initialArray.length > 0 ? initialArray : [1]),
-    1
-  );
+  const arrayData =
+    currentStep.dataStructures.searchArray?.data || initialArray;
+  const maxValue = Math.max(...(arrayData.length > 0 ? arrayData : [1]), 1);
 
-  const getBarGradient = (index: number, value: number): string => {
+  // helper functions to extract highlighting information
+  const getHighlightsByStyle = (style: string): number[] => {
+    const highlights = currentStep.highlights.searchArray || [];
+    const matching = highlights.find((h) => h.style === style);
+    return matching?.values || [];
+  };
+
+  const getCurrentIndices = (): number[] => getHighlightsByStyle("current");
+  const getLeftBoundaryIndices = (): number[] =>
+    getHighlightsByStyle("highlight");
+  const getRightBoundaryIndices = (): number[] =>
+    getHighlightsByStyle("visited");
+  const getMatchedIndices = (): number[] => getHighlightsByStyle("match");
+
+  const getBarGradient = (index: number): string => {
     const variables = currentStep.variables;
     const left = variables?.left ?? 0;
     const right = variables?.right ?? initialArray.length - 1;
-    const mid = variables?.mid;
+    const currentIndices = getCurrentIndices();
+    const matchedIndices = getMatchedIndices();
+    const leftBoundaryIndices = getLeftBoundaryIndices();
+    const rightBoundaryIndices = getRightBoundaryIndices();
 
-    // check if this is the middle element being compared
-    if (mid !== undefined && index === mid) {
-      return "from-[rgb(var(--color-danger-400))] via-[rgb(var(--color-danger-500))] to-[rgb(var(--color-danger-600))]";
-    }
-
-    // check if this is the target value
-    if (value === target && variables?.found) {
+    // check if this is the target value and found
+    if (matchedIndices.includes(index)) {
       return "from-[rgb(var(--color-accent-400))] via-[rgb(var(--color-accent-500))] to-[rgb(var(--color-accent-600))]";
     }
 
-    // check if this element is within the current search range
+    // check if this is the middle element being compared
+    if (currentIndices.includes(index)) {
+      return "from-[rgb(var(--color-danger-400))] via-[rgb(var(--color-danger-500))] to-[rgb(var(--color-danger-600))]";
+    }
+
+    // check if this is the left boundary marker (blue)
+    if (leftBoundaryIndices.includes(index)) {
+      return "from-blue-400 via-blue-500 to-blue-600";
+    }
+
+    // check if this is the right boundary marker (purple)
+    if (rightBoundaryIndices.includes(index)) {
+      return "from-purple-400 via-purple-500 to-purple-600";
+    }
+
+    // check if this element is within the current search range (but not a boundary)
     if (index >= left && index <= right) {
-      // left boundary marker
-      if (index === left) {
-        return "from-blue-400 via-blue-500 to-blue-600";
-      }
-      // right boundary marker
-      if (index === right) {
-        return "from-purple-400 via-purple-500 to-purple-600";
-      }
-      // regular search range
       return "from-[rgb(var(--color-warning-400))] via-[rgb(var(--color-warning-500))] to-[rgb(var(--color-warning-600))]";
     }
 
@@ -64,8 +81,13 @@ const BinarySearchCanvas = ({
   };
 
   const isMiddleElement = (index: number): boolean => {
-    const mid = currentStep.variables?.mid;
-    return mid !== undefined && index === mid;
+    const currentIndices = getCurrentIndices();
+    return currentIndices.includes(index);
+  };
+
+  const isFoundElement = (index: number): boolean => {
+    const matchedIndices = getMatchedIndices();
+    return matchedIndices.includes(index);
   };
 
   const containerVariants = {
@@ -80,7 +102,7 @@ const BinarySearchCanvas = ({
   };
 
   // bar width calculation
-  const numBars = initialArray.length;
+  const numBars = arrayData.length;
   const gap = 12;
   const containerPadding = 64;
   const estimatedContainerWidth =
@@ -113,10 +135,10 @@ const BinarySearchCanvas = ({
         animate="visible"
         layout
       >
-        {initialArray.map((value, index) => {
+        {arrayData.map((value: number, index: number) => {
           const inSearchRange = isInSearchRange(index);
           const isMidElement = isMiddleElement(index);
-          const isFound = value === target && currentStep.variables?.found;
+          const isFound = isFoundElement(index);
 
           return (
             <motion.div
@@ -173,7 +195,7 @@ const BinarySearchCanvas = ({
               <motion.div
                 className={`
                   relative flex flex-col items-center justify-end rounded-xl shadow-lg
-                  bg-gradient-to-t ${getBarGradient(index, value)}
+                  bg-gradient-to-t ${getBarGradient(index)}
                   border border-white/20 backdrop-blur-sm
                   ${!inSearchRange ? "opacity-40" : ""}
                 `}
@@ -209,14 +231,13 @@ const BinarySearchCanvas = ({
                 </motion.span>
 
                 {/* MID label for middle element */}
-                {currentStep.variables &&
-                  index === currentStep.variables.mid && (
-                    <div className="absolute -top-10 left-1/2 transform -translate-x-1/2">
-                      <div className="text-red-400 text-sm font-bold bg-white/20 rounded-lg px-3 py-1.5 border border-red-400/30">
-                        MID
-                      </div>
+                {isMidElement && (
+                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2">
+                    <div className="text-red-400 text-sm font-bold bg-white/20 rounded-lg px-3 py-1.5 border border-red-400/30">
+                      MID
                     </div>
-                  )}
+                  </div>
+                )}
 
                 <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-gradient-to-t from-white/10 to-transparent rounded-b-xl" />
               </motion.div>

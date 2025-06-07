@@ -4,9 +4,9 @@ import { Link, useParams, Navigate } from "react-router-dom";
 
 import CodeDisplay from "@components/CodeDisplay";
 import TargetCustomizer from "@components/TargetCustomizer";
-import type { Language, AlgorithmStep } from "@/types/algorithm";
 import { getCategoryById } from "@constants/algorithmCategories";
 import { usePersistedLanguage } from "@hooks/usePersistedLanguage";
+import type { Language, EnhancedAlgorithmStep } from "@/types/algorithm";
 import SearchInputModal from "@components/animation/search/SearchInputModal";
 import { binarySearchCodes } from "@constants/search/binary-search/binarySearchCode";
 import { binarySearchIntuition } from "@constants/search/binary-search/binarySearchIntuition";
@@ -58,8 +58,12 @@ const BinarySearchPage = () => {
     number[]
   >([]);
   const [showVariableViewer, setShowVariableViewer] = useState(false);
-  const [currentStep, setCurrentStep] = useState<AlgorithmStep | undefined>();
-  const [previousStep, setPreviousStep] = useState<AlgorithmStep | undefined>();
+  const [currentStep, setCurrentStep] = useState<
+    EnhancedAlgorithmStep | undefined
+  >();
+  const [previousStep, setPreviousStep] = useState<
+    EnhancedAlgorithmStep | undefined
+  >();
 
   // array and target
   const [currentArray, setCurrentArray] = useState<number[]>([
@@ -71,7 +75,7 @@ const BinarySearchPage = () => {
   // receive highlighted lines from visualizer
   const handleStepChange = (
     highlightedLines: number[],
-    stepData?: AlgorithmStep
+    stepData?: EnhancedAlgorithmStep
   ) => {
     setCurrentHighlightedLines(highlightedLines);
     if (stepData) {

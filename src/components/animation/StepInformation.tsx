@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import type { AlgorithmStep } from "@/types/algorithm";
+import type { EnhancedAlgorithmStep } from "@/types/algorithm";
 
 interface VariableDisplayConfig {
   key: string;
@@ -10,7 +10,7 @@ interface VariableDisplayConfig {
 }
 
 interface StepInformationProps {
-  currentStep: AlgorithmStep;
+  currentStep: EnhancedAlgorithmStep;
   currentStepIndex: number;
   totalSteps: number;
   isAutoPlaying: boolean;
