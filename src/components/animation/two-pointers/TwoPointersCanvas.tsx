@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
-import type { AlgorithmStep } from "@/types/algorithm";
+import type { EnhancedAlgorithmStep } from "@/types/algorithm";
 
 interface TwoPointersCanvasProps {
-  currentStep: AlgorithmStep;
+  currentStep: EnhancedAlgorithmStep;
   initialArray: number[];
   target: number;
   speed?: number;
@@ -13,38 +13,51 @@ const TwoPointersCanvas = ({
   initialArray,
   target,
 }: TwoPointersCanvasProps) => {
-  const maxValue = Math.max(
-    ...(initialArray.length > 0 ? initialArray : [1]),
-    1
-  );
+  const arrayData =
+    currentStep.dataStructures.searchArray?.data || initialArray;
+  const maxValue = Math.max(...(arrayData.length > 0 ? arrayData : [1]), 1);
 
-  const getBarGradient = (index: number, value: number): string => {
-    const variables = currentStep.variables;
-    const left = variables?.left ?? -1;
-    const right = variables?.right ?? -1;
+  // helper functions to extract highlighting information
+  const getHighlightsByStyle = (style: string): number[] => {
+    const highlights = currentStep.highlights.searchArray || [];
+    const matching = highlights.find((h) => h.style === style);
+    return matching?.values || [];
+  };
+
+  const getLeftPointerIndices = (): number[] =>
+    getHighlightsByStyle("highlight");
+  const getRightPointerIndices = (): number[] =>
+    getHighlightsByStyle("visited");
+  const getCurrentComparisonIndices = (): number[] =>
+    getHighlightsByStyle("current");
+  const getMatchedIndices = (): number[] => getHighlightsByStyle("match");
+
+  const getBarGradient = (index: number): string => {
+    const leftPointerIndices = getLeftPointerIndices();
+    const rightPointerIndices = getRightPointerIndices();
+    const currentComparisonIndices = getCurrentComparisonIndices();
+    const matchedIndices = getMatchedIndices();
 
     // check if solution is found and this element is part of the solution
-    if (variables?.found && variables?.solution) {
-      const solutionIndices = variables.solution;
-      if (solutionIndices.includes(index)) {
-        return "from-[rgb(var(--color-accent-400))] via-[rgb(var(--color-accent-500))] to-[rgb(var(--color-accent-600))]";
-      }
+    if (matchedIndices.includes(index)) {
+      return "from-[rgb(var(--color-accent-400))] via-[rgb(var(--color-accent-500))] to-[rgb(var(--color-accent-600))]";
     }
 
     // left pointer
-    if (index === left) {
+    if (leftPointerIndices.includes(index)) {
       return "from-blue-400 via-blue-500 to-blue-600";
     }
 
     // right pointer
-    if (index === right) {
+    if (rightPointerIndices.includes(index)) {
       return "from-purple-400 via-purple-500 to-purple-600";
     }
 
     // elements being compared
     if (
-      currentStep.compareIndices &&
-      currentStep.compareIndices.includes(index)
+      currentComparisonIndices.includes(index) &&
+      !leftPointerIndices.includes(index) &&
+      !rightPointerIndices.includes(index)
     ) {
       return "from-[rgb(var(--color-danger-400))] via-[rgb(var(--color-danger-500))] to-[rgb(var(--color-danger-600))]";
     }
@@ -58,16 +71,18 @@ const TwoPointersCanvas = ({
   };
 
   const isLeftPointer = (index: number): boolean => {
-    return index === currentStep.variables?.left;
+    const leftPointerIndices = getLeftPointerIndices();
+    return leftPointerIndices.includes(index);
   };
 
   const isRightPointer = (index: number): boolean => {
-    return index === currentStep.variables?.right;
+    const rightPointerIndices = getRightPointerIndices();
+    return rightPointerIndices.includes(index);
   };
 
   const isPartOfSolution = (index: number): boolean => {
-    const variables = currentStep.variables;
-    return variables?.found && variables?.solution?.includes(index);
+    const matchedIndices = getMatchedIndices();
+    return matchedIndices.includes(index);
   };
 
   const containerVariants = {
@@ -82,7 +97,7 @@ const TwoPointersCanvas = ({
   };
 
   // bar width calculation
-  const numBars = initialArray.length;
+  const numBars = arrayData.length;
   const gap = 12;
   const containerPadding = 64;
   const estimatedContainerWidth =
@@ -132,7 +147,7 @@ const TwoPointersCanvas = ({
         animate="visible"
         layout
       >
-        {initialArray.map((value, index) => {
+        {arrayData.map((value: number, index: number) => {
           const isLeft = isLeftPointer(index);
           const isRight = isRightPointer(index);
           const isSolution = isPartOfSolution(index);
@@ -191,7 +206,7 @@ const TwoPointersCanvas = ({
               <motion.div
                 className={`
                   relative flex flex-col items-center justify-end rounded-xl shadow-lg
-                  bg-gradient-to-t ${getBarGradient(index, value)}
+                  bg-gradient-to-t ${getBarGradient(index)}
                   border border-white/20 backdrop-blur-sm
                 `}
                 style={{

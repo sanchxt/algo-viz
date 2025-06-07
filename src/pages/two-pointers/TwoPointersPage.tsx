@@ -4,7 +4,7 @@ import { Link, useParams, Navigate } from "react-router-dom";
 
 import CodeDisplay from "@components/CodeDisplay";
 import TargetCustomizer from "@components/TargetCustomizer";
-import type { Language, AlgorithmStep } from "@/types/algorithm";
+import type { Language, EnhancedAlgorithmStep } from "@/types/algorithm";
 import { getCategoryById } from "@constants/algorithmCategories";
 import { twoSumCodes } from "@constants/two-pointers/twoSumCode";
 import { usePersistedLanguage } from "@hooks/usePersistedLanguage";
@@ -58,8 +58,12 @@ const TwoPointersPage = () => {
     number[]
   >([]);
   const [showVariableViewer, setShowVariableViewer] = useState(false);
-  const [currentStep, setCurrentStep] = useState<AlgorithmStep | undefined>();
-  const [previousStep, setPreviousStep] = useState<AlgorithmStep | undefined>();
+  const [currentStep, setCurrentStep] = useState<
+    EnhancedAlgorithmStep | undefined
+  >();
+  const [previousStep, setPreviousStep] = useState<
+    EnhancedAlgorithmStep | undefined
+  >();
 
   // array and target
   const [currentArray, setCurrentArray] = useState<number[]>([
@@ -71,7 +75,7 @@ const TwoPointersPage = () => {
   // receive highlighted lines from visualizer
   const handleStepChange = (
     highlightedLines: number[],
-    stepData?: AlgorithmStep
+    stepData?: EnhancedAlgorithmStep
   ) => {
     setCurrentHighlightedLines(highlightedLines);
     if (stepData) {
