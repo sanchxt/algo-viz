@@ -1,3 +1,4 @@
+// pages/sorting/BubbleSortPage.tsx
 import { useState } from "react";
 import { Link, useParams, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -5,7 +6,7 @@ import { motion } from "framer-motion";
 import CodeDisplay from "@components/CodeDisplay";
 import ArrayInputModal from "@components/ArrayInputModal";
 import ArrayCustomizer from "@components/ArrayCustomizer";
-import type { Language, AlgorithmStep } from "@/types/algorithm";
+import type { Language, EnhancedAlgorithmStep } from "@/types/algorithm";
 import { getCategoryById } from "@constants/algorithmCategories";
 import { usePersistedLanguage } from "@hooks/usePersistedLanguage";
 import { bubbleSortCodes } from "@/constants/sorting/bubble-sort/bubbleSortCode";
@@ -59,8 +60,12 @@ const BubbleSortPage = () => {
     number[]
   >([]);
   const [showVariableViewer, setShowVariableViewer] = useState(false);
-  const [currentStep, setCurrentStep] = useState<AlgorithmStep | undefined>();
-  const [previousStep, setPreviousStep] = useState<AlgorithmStep | undefined>();
+  const [currentStep, setCurrentStep] = useState<
+    EnhancedAlgorithmStep | undefined
+  >();
+  const [previousStep, setPreviousStep] = useState<
+    EnhancedAlgorithmStep | undefined
+  >();
 
   // array customization state
   const [currentArray, setCurrentArray] = useState<number[]>([64, 34, 25]);
@@ -68,7 +73,7 @@ const BubbleSortPage = () => {
 
   const handleStepChange = (
     highlightedLines: number[],
-    stepData?: AlgorithmStep
+    stepData?: EnhancedAlgorithmStep
   ) => {
     setCurrentHighlightedLines(highlightedLines);
     if (stepData) {
