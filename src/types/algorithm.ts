@@ -16,17 +16,28 @@ export type StepType =
   | "pointer_initialization"
   | "pointer_move_left"
   | "pointer_move_right"
-  // New string manipulation step types
+  // string manipulation step types
   | "string_iteration"
   | "character_access"
   | "frequency_count"
   | "hash_map_comparison"
   | "hash_map_creation"
-  | "string_comparison";
+  | "string_comparison"
+  // linked list step types
+  | "node_traversal"
+  | "link_reversal"
+  | "pointer_update";
 
 export interface StepContext {
   loopType?: "outer" | "inner" | "while" | "recursive" | "string_iteration";
-  operation?: "read" | "write" | "compare" | "count" | "access";
+  operation?:
+    | "read"
+    | "write"
+    | "compare"
+    | "count"
+    | "access"
+    | "reverse"
+    | "store";
   dataStructure?:
     | "array"
     | "tree"
@@ -34,11 +45,14 @@ export interface StepContext {
     | "stack"
     | "queue"
     | "string"
-    | "hashmap";
+    | "hashmap"
+    | "linkedlist";
   passNumber?: number;
   iterationNumber?: number;
   characterIndex?: number;
   stringIndex?: number;
+  nodeId?: string;
+  pointerType?: "prev" | "current" | "next" | "head";
 }
 
 export interface DataStructureState {
@@ -68,7 +82,9 @@ export interface HighlightInfo {
     | "edges"
     | "positions"
     | "characters"
-    | "cells";
+    | "cells"
+    | "links"
+    | "pointers";
   values: any[];
   style?:
     | "highlight"
@@ -78,7 +94,9 @@ export interface HighlightInfo {
     | "visited"
     | "current"
     | "match"
-    | "mismatch";
+    | "mismatch"
+    | "reversed"
+    | "pointer";
   color?: string;
   intensity?: "low" | "medium" | "high";
 }
@@ -104,7 +122,13 @@ export interface EnhancedAlgorithmStep {
 export interface Algorithm {
   id: string;
   name: string;
-  category: "sorting" | "search" | "trees" | "sliding-window" | "strings";
+  category:
+    | "sorting"
+    | "search"
+    | "trees"
+    | "sliding-window"
+    | "strings"
+    | "linked-lists";
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   description: string;
   dataStructureType?:
@@ -113,6 +137,7 @@ export interface Algorithm {
     | "hashmap"
     | "tree"
     | "graph"
+    | "linkedlist"
     | "mixed";
 }
 

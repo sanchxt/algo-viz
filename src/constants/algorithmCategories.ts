@@ -121,7 +121,17 @@ export const algorithmCategories: AlgorithmCategory[] = [
       border: "border-pink-400/30",
       text: "text-pink-300",
     },
-    algorithms: [],
+    algorithms: [
+      {
+        id: "reverse-linked-list",
+        name: "Reverse Linked List",
+        category: "linked-lists",
+        difficulty: "Beginner",
+        description:
+          "Reverse a singly linked list in-place using three pointers to carefully redirect node connections.",
+        dataStructureType: "linkedlist",
+      },
+    ],
   },
   {
     id: "recursion",

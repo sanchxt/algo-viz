@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { X, Eye, EyeOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -19,6 +19,23 @@ interface VariableInspectorProps {
 interface ExpandedSections {
   variables: boolean;
   [key: string]: boolean;
+}
+
+interface LinkedListNode {
+  id: string;
+  value: number;
+  next: string | null;
+}
+
+interface LinkedListData {
+  nodes: LinkedListNode[];
+  head: string | null;
+  reversedLinks: string[];
+  reversingMeta?: {
+    from: string;
+    to: string | null;
+    originalNext: string | null;
+  };
 }
 
 const VariableInspector = ({
@@ -60,17 +77,28 @@ const VariableInspector = ({
     return [];
   };
 
+  // helper function to get linked list data
+  const getLinkedListData = (
+    dataStructure: DataStructureState | undefined
+  ): LinkedListData | null => {
+    if (!dataStructure) return null;
+    if (dataStructure.type === "linkedlist") {
+      return dataStructure.data as LinkedListData;
+    }
+    return null;
+  };
+
   // helper function to get highlights for a specific DS
   const getHighlightsByStyle = (
     highlights: HighlightInfo[] | undefined,
     style: string
-  ): number[] => {
+  ): string[] => {
     if (!highlights) return [];
     const matching = highlights.find((h) => h.style === style);
     return matching?.values || [];
   };
 
-  // helper function to get all highlights for a DS
+  // helper function to get all highlights for arrays
   const getAllHighlights = (
     highlights: HighlightInfo[] | undefined
   ): {
@@ -85,15 +113,34 @@ const VariableInspector = ({
     sorted: number[];
   } => {
     return {
-      highlighted: getHighlightsByStyle(highlights, "highlight"),
-      compared: getHighlightsByStyle(highlights, "compare"),
-      swapped: getHighlightsByStyle(highlights, "swap"),
-      found: getHighlightsByStyle(highlights, "match"),
-      middle: getHighlightsByStyle(highlights, "current"),
-      searchRange: getHighlightsByStyle(highlights, "active"),
-      leftBoundary: getHighlightsByStyle(highlights, "highlight"),
-      rightBoundary: getHighlightsByStyle(highlights, "visited"),
-      sorted: getHighlightsByStyle(highlights, "match"),
+      highlighted: getHighlightsByStyle(highlights, "highlight").map(Number),
+      compared: getHighlightsByStyle(highlights, "compare").map(Number),
+      swapped: getHighlightsByStyle(highlights, "swap").map(Number),
+      found: getHighlightsByStyle(highlights, "match").map(Number),
+      middle: getHighlightsByStyle(highlights, "current").map(Number),
+      searchRange: getHighlightsByStyle(highlights, "active").map(Number),
+      leftBoundary: getHighlightsByStyle(highlights, "highlight").map(Number),
+      rightBoundary: getHighlightsByStyle(highlights, "visited").map(Number),
+      sorted: getHighlightsByStyle(highlights, "match").map(Number),
+    };
+  };
+
+  // helper function to get all highlights for linked lists
+  const getLinkedListHighlights = (
+    highlights: HighlightInfo[] | undefined
+  ): {
+    activeNodes: string[];
+    visitedNodes: string[];
+    currentNodes: string[];
+    matchNodes: string[];
+    reversedLinks: string[];
+  } => {
+    return {
+      activeNodes: getHighlightsByStyle(highlights, "active"),
+      visitedNodes: getHighlightsByStyle(highlights, "visited"),
+      currentNodes: getHighlightsByStyle(highlights, "current"),
+      matchNodes: getHighlightsByStyle(highlights, "match"),
+      reversedLinks: getHighlightsByStyle(highlights, "reversed"),
     };
   };
 
@@ -106,9 +153,24 @@ const VariableInspector = ({
 
   const hasDataStructureChanged = (key: string): boolean => {
     if (!previousStep || !currentStep) return false;
-    const currentData = getArrayData(currentStep.dataStructures[key]);
-    const previousData = getArrayData(previousStep.dataStructures[key]);
-    return JSON.stringify(currentData) !== JSON.stringify(previousData);
+
+    const currentDS = currentStep.dataStructures[key];
+    const previousDS = previousStep.dataStructures[key];
+
+    if (!currentDS || !previousDS) return true;
+
+    // compare based on data structure type
+    if (currentDS.type === "array") {
+      const currentData = getArrayData(currentDS);
+      const previousData = getArrayData(previousDS);
+      return JSON.stringify(currentData) !== JSON.stringify(previousData);
+    } else if (currentDS.type === "linkedlist") {
+      const currentData = getLinkedListData(currentDS);
+      const previousData = getLinkedListData(previousDS);
+      return JSON.stringify(currentData) !== JSON.stringify(previousData);
+    }
+
+    return JSON.stringify(currentDS.data) !== JSON.stringify(previousDS.data);
   };
 
   // get the display name for a DS
@@ -121,6 +183,7 @@ const VariableInspector = ({
       graph: "Graph",
       hashmap: "Hash Map",
       string: "String",
+      linkedList: "Linked List",
     };
     return commonNames[key] || key.charAt(0).toUpperCase() + key.slice(1);
   };
@@ -167,6 +230,11 @@ const VariableInspector = ({
         border: "border-pink-400/30",
         dot: "bg-pink-400",
       },
+      linkedList: {
+        bg: "bg-emerald-500/20",
+        border: "border-emerald-400/30",
+        dot: "bg-emerald-400",
+      },
     };
     return (
       colorSchemes[key] || {
@@ -177,9 +245,12 @@ const VariableInspector = ({
     );
   };
 
-  if (!isOpen) return null;
+  // memoized data structures to prevent unnecessary re-renders
+  const dataStructures = useMemo(() => {
+    return currentStep?.dataStructures || {};
+  }, [currentStep?.dataStructures]);
 
-  const dataStructures = currentStep?.dataStructures || {};
+  if (!isOpen) return null;
 
   return (
     <AnimatePresence>
@@ -330,209 +401,362 @@ const VariableInspector = ({
                     </div>
                   </div>
 
+                  {/* data structures section */}
                   {Object.entries(dataStructures).map(
                     ([structureKey, structure]) => {
-                      if (structure.type !== "array") return null; // only handle arrays for now
-
-                      const arrayData = getArrayData(structure);
-                      const highlights = currentStep.highlights[structureKey];
-                      const allHighlights = getAllHighlights(highlights);
                       const hasChanged = hasDataStructureChanged(structureKey);
                       const colorScheme = getColorScheme(structureKey);
                       const displayName = getDataStructureName(structureKey);
 
-                      return (
-                        <div key={structureKey}>
-                          <button
-                            onClick={() => toggleSection(structureKey)}
-                            className="flex items-center justify-between w-full mb-4 p-3 backdrop-blur-md bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all duration-300 hover:scale-[1.02] active:scale-95"
-                          >
-                            <div className="flex items-center gap-2">
-                              <div
-                                className={`w-2 h-2 ${colorScheme.dot} rounded-full`}
-                              ></div>
-                              <span className="font-semibold">
-                                {displayName}
-                              </span>
-                              {hasChanged && (
-                                <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
-                              )}
-                            </div>
-                            <div
-                              className={`${
-                                expandedSections[structureKey]
-                                  ? "rotate-180"
-                                  : "rotate-0"
-                              } transition-transform duration-200`}
-                            >
-                              {expandedSections[structureKey] ? (
-                                <EyeOff size={16} />
-                              ) : (
-                                <Eye size={16} />
-                              )}
-                            </div>
-                          </button>
+                      // handle arrays
+                      if (structure.type === "array") {
+                        const arrayData = getArrayData(structure);
+                        const highlights = currentStep.highlights[structureKey];
+                        const allHighlights = getAllHighlights(highlights);
 
-                          <div
-                            className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                              expandedSections[structureKey]
-                                ? "max-h-[500px] opacity-100"
-                                : "max-h-0 opacity-0"
-                            }`}
-                          >
-                            <div
-                              className={`p-4 rounded-xl border transition-all duration-300 ${
-                                hasChanged
-                                  ? `${colorScheme.bg} ${colorScheme.border} shadow-lg`
-                                  : "bg-white/5 border-white/10"
-                              }`}
+                        return (
+                          <div key={structureKey}>
+                            <button
+                              onClick={() => toggleSection(structureKey)}
+                              className="flex items-center justify-between w-full mb-4 p-3 backdrop-blur-md bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all duration-300 hover:scale-[1.02] active:scale-95"
                             >
-                              <div className="flex items-center gap-2 mb-3">
-                                <span className="text-gray-300 text-sm font-medium">
-                                  Length: {arrayData.length}
+                              <div className="flex items-center gap-2">
+                                <div
+                                  className={`w-2 h-2 ${colorScheme.dot} rounded-full`}
+                                ></div>
+                                <span className="font-semibold">
+                                  {displayName}
                                 </span>
                                 {hasChanged && (
-                                  <span className="text-yellow-200 text-xs px-2 py-1 bg-yellow-500/20 rounded-lg border border-yellow-400/30 animate-in zoom-in duration-200">
-                                    Modified
-                                  </span>
+                                  <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
                                 )}
                               </div>
+                              <div
+                                className={`${
+                                  expandedSections[structureKey]
+                                    ? "rotate-180"
+                                    : "rotate-0"
+                                } transition-transform duration-200`}
+                              >
+                                {expandedSections[structureKey] ? (
+                                  <EyeOff size={16} />
+                                ) : (
+                                  <Eye size={16} />
+                                )}
+                              </div>
+                            </button>
 
-                              <div className="grid grid-cols-1 gap-2">
-                                {/* array indices */}
-                                <div className="flex gap-1 mb-1 overflow-x-auto">
-                                  {arrayData.map((_, index) => (
-                                    <div
-                                      key={`index-${index}`}
-                                      className="min-w-[40px] flex-shrink-0 text-center text-xs text-gray-400 font-mono py-1"
-                                    >
-                                      [{index}]
-                                    </div>
-                                  ))}
+                            <div
+                              className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                                expandedSections[structureKey]
+                                  ? "max-h-[500px] opacity-100"
+                                  : "max-h-0 opacity-0"
+                              }`}
+                            >
+                              <div
+                                className={`p-4 rounded-xl border transition-all duration-300 ${
+                                  hasChanged
+                                    ? `${colorScheme.bg} ${colorScheme.border} shadow-lg`
+                                    : "bg-white/5 border-white/10"
+                                }`}
+                              >
+                                <div className="flex items-center gap-2 mb-3">
+                                  <span className="text-gray-300 text-sm font-medium">
+                                    Length: {arrayData.length}
+                                  </span>
+                                  {hasChanged && (
+                                    <span className="text-yellow-200 text-xs px-2 py-1 bg-yellow-500/20 rounded-lg border border-yellow-400/30 animate-in zoom-in duration-200">
+                                      Modified
+                                    </span>
+                                  )}
                                 </div>
 
-                                {/* array values */}
-                                <div className="flex gap-1 overflow-x-auto pb-2">
-                                  {arrayData.map(
-                                    (value: number, index: number) => {
-                                      const isComparing =
-                                        allHighlights.compared.includes(index);
-                                      const isSwapping =
-                                        allHighlights.swapped.includes(index);
-                                      const isFound =
-                                        allHighlights.found.includes(index);
-                                      const isSorted =
-                                        allHighlights.sorted.includes(index);
-                                      const isMiddle =
-                                        allHighlights.middle.includes(index);
-                                      const isInSearchRange =
-                                        allHighlights.searchRange.includes(
-                                          index
+                                <div className="grid grid-cols-1 gap-2">
+                                  {/* array indices */}
+                                  <div className="flex gap-1 mb-1 overflow-x-auto">
+                                    {arrayData.map((_, index) => (
+                                      <div
+                                        key={`index-${index}`}
+                                        className="min-w-[40px] flex-shrink-0 text-center text-xs text-gray-400 font-mono py-1"
+                                      >
+                                        [{index}]
+                                      </div>
+                                    ))}
+                                  </div>
+
+                                  {/* array values */}
+                                  <div className="flex gap-1 overflow-x-auto pb-2">
+                                    {arrayData.map(
+                                      (value: number, index: number) => {
+                                        const isComparing =
+                                          allHighlights.compared.includes(
+                                            index
+                                          );
+                                        const isSwapping =
+                                          allHighlights.swapped.includes(index);
+                                        const isFound =
+                                          allHighlights.found.includes(index);
+                                        const isSorted =
+                                          allHighlights.sorted.includes(index);
+                                        const isMiddle =
+                                          allHighlights.middle.includes(index);
+                                        const isInSearchRange =
+                                          allHighlights.searchRange.includes(
+                                            index
+                                          );
+
+                                        let bgColor = "bg-white/10";
+                                        let textColor = "text-white";
+                                        let borderColor = "border-white/20";
+
+                                        if (isFound || isSorted) {
+                                          bgColor = "bg-green-500/30";
+                                          textColor = "text-green-200";
+                                          borderColor = "border-green-400/40";
+                                        } else if (isSwapping) {
+                                          bgColor = "bg-red-500/30";
+                                          textColor = "text-red-200";
+                                          borderColor = "border-red-400/40";
+                                        } else if (isComparing || isMiddle) {
+                                          bgColor = "bg-yellow-500/30";
+                                          textColor = "text-yellow-200";
+                                          borderColor = "border-yellow-400/40";
+                                        } else if (isInSearchRange) {
+                                          bgColor = "bg-blue-500/30";
+                                          textColor = "text-blue-200";
+                                          borderColor = "border-blue-400/40";
+                                        }
+
+                                        return (
+                                          <div
+                                            key={`value-${index}-${value}`}
+                                            className={`min-w-[40px] flex-shrink-0 text-center font-mono font-semibold text-sm py-2 px-1 rounded-lg border transition-all duration-200 ${bgColor} ${textColor} ${borderColor} ${
+                                              isSwapping ||
+                                              isComparing ||
+                                              isFound ||
+                                              isSorted ||
+                                              isMiddle
+                                                ? "scale-105"
+                                                : "scale-100"
+                                            } transition-all duration-150`}
+                                          >
+                                            {value}
+                                          </div>
+                                        );
+                                      }
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      // handle linked lists
+                      if (structure.type === "linkedlist") {
+                        const linkedListData = getLinkedListData(structure);
+                        if (!linkedListData) return null;
+
+                        const highlights = currentStep.highlights[structureKey];
+                        const llHighlights =
+                          getLinkedListHighlights(highlights);
+
+                        return (
+                          <div key={structureKey}>
+                            <button
+                              onClick={() => toggleSection(structureKey)}
+                              className="flex items-center justify-between w-full mb-4 p-3 backdrop-blur-md bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all duration-300 hover:scale-[1.02] active:scale-95"
+                            >
+                              <div className="flex items-center gap-2">
+                                <div
+                                  className={`w-2 h-2 ${colorScheme.dot} rounded-full`}
+                                ></div>
+                                <span className="font-semibold">
+                                  {displayName}
+                                </span>
+                                {hasChanged && (
+                                  <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
+                                )}
+                              </div>
+                              <div
+                                className={`${
+                                  expandedSections[structureKey]
+                                    ? "rotate-180"
+                                    : "rotate-0"
+                                } transition-transform duration-200`}
+                              >
+                                {expandedSections[structureKey] ? (
+                                  <EyeOff size={16} />
+                                ) : (
+                                  <Eye size={16} />
+                                )}
+                              </div>
+                            </button>
+
+                            <div
+                              className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                                expandedSections[structureKey]
+                                  ? "max-h-[500px] opacity-100"
+                                  : "max-h-0 opacity-0"
+                              }`}
+                            >
+                              <div
+                                className={`p-4 rounded-xl border transition-all duration-300 ${
+                                  hasChanged
+                                    ? `${colorScheme.bg} ${colorScheme.border} shadow-lg`
+                                    : "bg-white/5 border-white/10"
+                                }`}
+                              >
+                                <div className="flex items-center gap-2 mb-3">
+                                  <span className="text-gray-300 text-sm font-medium">
+                                    Nodes: {linkedListData.nodes.length}
+                                  </span>
+                                  <span className="text-gray-300 text-sm font-medium">
+                                    Head: {linkedListData.head || "null"}
+                                  </span>
+                                  {hasChanged && (
+                                    <span className="text-yellow-200 text-xs px-2 py-1 bg-yellow-500/20 rounded-lg border border-yellow-400/30 animate-in zoom-in duration-200">
+                                      Modified
+                                    </span>
+                                  )}
+                                </div>
+
+                                {/* nodes display */}
+                                <div className="space-y-2">
+                                  <div className="text-gray-300 text-sm font-medium mb-2">
+                                    Nodes:
+                                  </div>
+                                  <div className="grid grid-cols-1 gap-2">
+                                    {linkedListData.nodes.map((node) => {
+                                      const isActive =
+                                        llHighlights.activeNodes.includes(
+                                          node.id
+                                        );
+                                      const isVisited =
+                                        llHighlights.visitedNodes.includes(
+                                          node.id
+                                        );
+                                      const isCurrent =
+                                        llHighlights.currentNodes.includes(
+                                          node.id
+                                        );
+                                      const isMatch =
+                                        llHighlights.matchNodes.includes(
+                                          node.id
                                         );
 
                                       let bgColor = "bg-white/10";
                                       let textColor = "text-white";
                                       let borderColor = "border-white/20";
 
-                                      if (isFound || isSorted) {
+                                      if (isMatch) {
                                         bgColor = "bg-green-500/30";
                                         textColor = "text-green-200";
                                         borderColor = "border-green-400/40";
-                                      } else if (isSwapping) {
-                                        bgColor = "bg-red-500/30";
-                                        textColor = "text-red-200";
-                                        borderColor = "border-red-400/40";
-                                      } else if (isComparing || isMiddle) {
-                                        bgColor = "bg-yellow-500/30";
-                                        textColor = "text-yellow-200";
-                                        borderColor = "border-yellow-400/40";
-                                      } else if (isInSearchRange) {
+                                      } else if (isActive) {
+                                        bgColor = "bg-amber-500/30";
+                                        textColor = "text-amber-200";
+                                        borderColor = "border-amber-400/40";
+                                      } else if (isCurrent) {
                                         bgColor = "bg-blue-500/30";
                                         textColor = "text-blue-200";
                                         borderColor = "border-blue-400/40";
+                                      } else if (isVisited) {
+                                        bgColor = "bg-purple-500/30";
+                                        textColor = "text-purple-200";
+                                        borderColor = "border-purple-400/40";
                                       }
 
                                       return (
                                         <div
-                                          key={`value-${index}-${value}`}
-                                          className={`min-w-[40px] flex-shrink-0 text-center font-mono font-semibold text-sm py-2 px-1 rounded-lg border transition-all duration-200 ${bgColor} ${textColor} ${borderColor} ${
-                                            isSwapping ||
-                                            isComparing ||
-                                            isFound ||
-                                            isSorted ||
-                                            isMiddle
-                                              ? "scale-105"
-                                              : "scale-100"
-                                          } transition-all duration-150`}
+                                          key={node.id}
+                                          className={`flex items-center justify-between p-2 rounded-lg border transition-all duration-200 ${bgColor} ${textColor} ${borderColor}`}
                                         >
-                                          {value}
+                                          <div className="flex items-center gap-2">
+                                            <span className="font-mono text-xs">
+                                              {node.id}:
+                                            </span>
+                                            <span className="font-mono font-semibold">
+                                              {node.value}
+                                            </span>
+                                          </div>
+                                          <div className="text-xs">
+                                            → {node.next || "null"}
+                                          </div>
                                         </div>
                                       );
-                                    }
-                                  )}
+                                    })}
+                                  </div>
                                 </div>
-                              </div>
 
-                              {/* highlight status indicators */}
-                              <div className="flex flex-wrap gap-2 mt-4 text-xs">
-                                {allHighlights.found.length > 0 && (
-                                  <div className="flex items-center gap-1 px-2 py-1 bg-green-500/20 rounded-lg border border-green-400/30">
-                                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                                    <span className="text-green-200">
-                                      Found: {allHighlights.found.join(", ")}
-                                    </span>
+                                {/* reversed links */}
+                                {linkedListData.reversedLinks.length > 0 && (
+                                  <div className="mt-4">
+                                    <div className="text-gray-300 text-sm font-medium mb-2">
+                                      Reversed Links:
+                                    </div>
+                                    <div className="flex flex-wrap gap-1">
+                                      {linkedListData.reversedLinks.map(
+                                        (link, index) => (
+                                          <span
+                                            key={index}
+                                            className="px-2 py-1 bg-emerald-500/20 rounded border border-emerald-400/30 text-emerald-200 text-xs font-mono"
+                                          >
+                                            {link}
+                                          </span>
+                                        )
+                                      )}
+                                    </div>
                                   </div>
                                 )}
-                                {allHighlights.sorted.length > 0 &&
-                                  structureKey === "sortArray" && (
-                                    <div className="flex items-center gap-1 px-2 py-1 bg-green-500/20 rounded-lg border border-green-400/30">
-                                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                                      <span className="text-green-200">
-                                        Sorted:{" "}
-                                        {allHighlights.sorted.join(", ")}
+
+                                {/* highlight status indicators */}
+                                <div className="flex flex-wrap gap-2 mt-4 text-xs">
+                                  {llHighlights.activeNodes.length > 0 && (
+                                    <div className="flex items-center gap-1 px-2 py-1 bg-amber-500/20 rounded-lg border border-amber-400/30">
+                                      <div className="w-2 h-2 bg-amber-400 rounded-full"></div>
+                                      <span className="text-amber-200">
+                                        Active:{" "}
+                                        {llHighlights.activeNodes.join(", ")}
                                       </span>
                                     </div>
                                   )}
-                                {allHighlights.compared.length > 0 && (
-                                  <div className="flex items-center gap-1 px-2 py-1 bg-yellow-500/20 rounded-lg border border-yellow-400/30">
-                                    <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                                    <span className="text-yellow-200">
-                                      Comparing:{" "}
-                                      {allHighlights.compared.join(", ")}
-                                    </span>
-                                  </div>
-                                )}
-                                {allHighlights.swapped.length > 0 && (
-                                  <div className="flex items-center gap-1 px-2 py-1 bg-red-500/20 rounded-lg border border-red-400/30">
-                                    <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                                    <span className="text-red-200">
-                                      Swapping:{" "}
-                                      {allHighlights.swapped.join(", ")}
-                                    </span>
-                                  </div>
-                                )}
-                                {allHighlights.middle.length > 0 && (
-                                  <div className="flex items-center gap-1 px-2 py-1 bg-yellow-500/20 rounded-lg border border-yellow-400/30">
-                                    <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                                    <span className="text-yellow-200">
-                                      Middle: {allHighlights.middle.join(", ")}
-                                    </span>
-                                  </div>
-                                )}
-                                {allHighlights.searchRange.length > 0 && (
-                                  <div className="flex items-center gap-1 px-2 py-1 bg-blue-500/20 rounded-lg border border-blue-400/30">
-                                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                                    <span className="text-blue-200">
-                                      Search Range:{" "}
-                                      {allHighlights.searchRange.join(", ")}
-                                    </span>
-                                  </div>
-                                )}
+                                  {llHighlights.currentNodes.length > 0 && (
+                                    <div className="flex items-center gap-1 px-2 py-1 bg-blue-500/20 rounded-lg border border-blue-400/30">
+                                      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                                      <span className="text-blue-200">
+                                        Current:{" "}
+                                        {llHighlights.currentNodes.join(", ")}
+                                      </span>
+                                    </div>
+                                  )}
+                                  {llHighlights.visitedNodes.length > 0 && (
+                                    <div className="flex items-center gap-1 px-2 py-1 bg-purple-500/20 rounded-lg border border-purple-400/30">
+                                      <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                                      <span className="text-purple-200">
+                                        Visited:{" "}
+                                        {llHighlights.visitedNodes.join(", ")}
+                                      </span>
+                                    </div>
+                                  )}
+                                  {llHighlights.matchNodes.length > 0 && (
+                                    <div className="flex items-center gap-1 px-2 py-1 bg-green-500/20 rounded-lg border border-green-400/30">
+                                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                                      <span className="text-green-200">
+                                        Completed:{" "}
+                                        {llHighlights.matchNodes.join(", ")}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      );
+                        );
+                      }
+
+                      return null;
                     }
                   )}
                 </div>
