@@ -144,7 +144,16 @@ export const algorithmCategories: AlgorithmCategory[] = [
       border: "border-indigo-400/30",
       text: "text-indigo-300",
     },
-    algorithms: [],
+    algorithms: [
+      {
+        id: "factorial",
+        name: "Factorial (Recursive)",
+        category: "recursion",
+        difficulty: "Beginner",
+        description:
+          "A classic recursive algorithm that calculates the factorial of a number by breaking it down into smaller subproblems.",
+      },
+    ],
   },
   {
     id: "stacks-queues",

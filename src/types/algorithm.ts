@@ -26,7 +26,14 @@ export type StepType =
   // linked list step types
   | "node_traversal"
   | "link_reversal"
-  | "pointer_update";
+  | "pointer_update"
+  // recursion step types
+  | "recursive_call"
+  | "base_case_check"
+  | "base_case_reached"
+  | "recursive_return"
+  | "call_stack_push"
+  | "call_stack_pop";
 
 export interface StepContext {
   loopType?: "outer" | "inner" | "while" | "recursive" | "string_iteration";
@@ -37,7 +44,9 @@ export interface StepContext {
     | "count"
     | "access"
     | "reverse"
-    | "store";
+    | "store"
+    | "call"
+    | "return_value";
   dataStructure?:
     | "array"
     | "tree"
@@ -46,13 +55,18 @@ export interface StepContext {
     | "queue"
     | "string"
     | "hashmap"
-    | "linkedlist";
+    | "linkedlist"
+    | "call_stack"
+    | "recursion_tree";
   passNumber?: number;
   iterationNumber?: number;
   characterIndex?: number;
   stringIndex?: number;
   nodeId?: string;
   pointerType?: "prev" | "current" | "next" | "head";
+  recursionLevel?: number;
+  callId?: string;
+  parentCallId?: string;
 }
 
 export interface DataStructureState {
@@ -64,7 +78,9 @@ export interface DataStructureState {
     | "graph"
     | "linkedlist"
     | "stack"
-    | "queue";
+    | "queue"
+    | "call_stack"
+    | "recursion_tree";
   data: any;
   metadata?: {
     label?: string;
@@ -84,7 +100,9 @@ export interface HighlightInfo {
     | "characters"
     | "cells"
     | "links"
-    | "pointers";
+    | "pointers"
+    | "call_frames"
+    | "tree_nodes";
   values: any[];
   style?:
     | "highlight"
@@ -96,7 +114,10 @@ export interface HighlightInfo {
     | "match"
     | "mismatch"
     | "reversed"
-    | "pointer";
+    | "pointer"
+    | "base_case"
+    | "recursive_call"
+    | "returning";
   color?: string;
   intensity?: "low" | "medium" | "high";
 }
@@ -128,7 +149,8 @@ export interface Algorithm {
     | "trees"
     | "sliding-window"
     | "strings"
-    | "linked-lists";
+    | "linked-lists"
+    | "recursion";
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   description: string;
   dataStructureType?:
