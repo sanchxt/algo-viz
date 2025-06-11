@@ -7,6 +7,7 @@ import TwoPointersPage from "@pages/two-pointers/TwoPointersPage";
 import AnagramDetectionPage from "@pages/strings/AnagramDetectionPage";
 import ReverseLinkedListPage from "@pages/linked-lists/ReverseLinkedListPage";
 import FactorialPage from "./recursion/FactorialPage";
+import BalancedParenthesesPage from "./stacks/BalancedParenthesesPage";
 
 const AlgorithmPage = () => {
   const { categoryId, algorithmId } = useParams<{
@@ -35,6 +36,8 @@ const AlgorithmPage = () => {
       return <ReverseLinkedListPage />;
     case "factorial":
       return <FactorialPage />;
+    case "balanced-parentheses":
+      return <BalancedParenthesesPage />;
     default:
       // for unknown algorithms, redirect to category page
       return <Navigate to={`/categories/${categoryId}`} replace />;
