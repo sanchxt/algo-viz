@@ -33,7 +33,14 @@ export type StepType =
   | "base_case_reached"
   | "recursive_return"
   | "call_stack_push"
-  | "call_stack_pop";
+  | "call_stack_pop"
+  // stack step types
+  | "stack_push"
+  | "stack_pop"
+  | "stack_peek"
+  | "character_check"
+  | "validation_success"
+  | "validation_failure";
 
 export interface StepContext {
   loopType?: "outer" | "inner" | "while" | "recursive" | "string_iteration";
@@ -46,7 +53,11 @@ export interface StepContext {
     | "reverse"
     | "store"
     | "call"
-    | "return_value";
+    | "return_value"
+    | "push"
+    | "pop"
+    | "peek"
+    | "validate";
   dataStructure?:
     | "array"
     | "tree"
@@ -67,6 +78,11 @@ export interface StepContext {
   recursionLevel?: number;
   callId?: string;
   parentCallId?: string;
+  // stack-specific context
+  stackElement?: string;
+  bracketType?: "opening" | "closing";
+  matchingBracket?: string;
+  isValid?: boolean;
 }
 
 export interface DataStructureState {
@@ -102,7 +118,9 @@ export interface HighlightInfo {
     | "links"
     | "pointers"
     | "call_frames"
-    | "tree_nodes";
+    | "tree_nodes"
+    | "stack_elements"
+    | "stack_top";
   values: any[];
   style?:
     | "highlight"
@@ -117,7 +135,10 @@ export interface HighlightInfo {
     | "pointer"
     | "base_case"
     | "recursive_call"
-    | "returning";
+    | "returning"
+    | "valid"
+    | "invalid"
+    | "processing";
   color?: string;
   intensity?: "low" | "medium" | "high";
 }
@@ -150,7 +171,9 @@ export interface Algorithm {
     | "sliding-window"
     | "strings"
     | "linked-lists"
-    | "recursion";
+    | "recursion"
+    | "stacks"
+    | "queues";
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   description: string;
   dataStructureType?:
@@ -160,6 +183,8 @@ export interface Algorithm {
     | "tree"
     | "graph"
     | "linkedlist"
+    | "stack"
+    | "queue"
     | "mixed";
 }
 

@@ -156,15 +156,38 @@ export const algorithmCategories: AlgorithmCategory[] = [
     ],
   },
   {
-    id: "stacks-queues",
-    name: "Stacks & Queues",
+    id: "stacks",
+    name: "Stacks",
     description:
-      "Linear data structures with specific insertion and deletion patterns (LIFO and FIFO).",
+      "Linear data structures that follow Last-In-First-Out (LIFO) principle for insertion and deletion.",
     icon: "📚",
     color: {
       gradient: "from-teal-400/20 to-teal-600/20",
       border: "border-teal-400/30",
       text: "text-teal-300",
+    },
+    algorithms: [
+      {
+        id: "balanced-parentheses",
+        name: "Balanced Parentheses Checker",
+        category: "stacks",
+        difficulty: "Beginner",
+        description:
+          "Verify whether brackets in a string are properly balanced and correctly nested using stack's LIFO principle.",
+        dataStructureType: "stack",
+      },
+    ],
+  },
+  {
+    id: "queues",
+    name: "Queues",
+    description:
+      "Linear data structures that follow First-In-First-Out (FIFO) principle for insertion and deletion.",
+    icon: "🚶‍♂️",
+    color: {
+      gradient: "from-cyan-400/20 to-cyan-600/20",
+      border: "border-cyan-400/30",
+      text: "text-cyan-300",
     },
     algorithms: [],
   },
@@ -214,9 +237,9 @@ export const algorithmCategories: AlgorithmCategory[] = [
       "Problem-solving approach that makes locally optimal choices at each step.",
     icon: "🎯",
     color: {
-      gradient: "from-cyan-400/20 to-cyan-600/20",
-      border: "border-cyan-400/30",
-      text: "text-cyan-300",
+      gradient: "from-violet-400/20 to-violet-600/20",
+      border: "border-violet-400/30",
+      text: "text-violet-300",
     },
     algorithms: [],
   },
@@ -227,9 +250,9 @@ export const algorithmCategories: AlgorithmCategory[] = [
       "Complete binary trees that satisfy the heap property for efficient priority operations.",
     icon: "⛰️",
     color: {
-      gradient: "from-violet-400/20 to-violet-600/20",
-      border: "border-violet-400/30",
-      text: "text-violet-300",
+      gradient: "from-slate-400/20 to-slate-600/20",
+      border: "border-slate-400/30",
+      text: "text-slate-300",
     },
     algorithms: [],
   },
