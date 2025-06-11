@@ -6,6 +6,7 @@ import LinearSearchPage from "@pages/searching/LinearSearchPage";
 import TwoPointersPage from "@pages/two-pointers/TwoPointersPage";
 import AnagramDetectionPage from "@pages/strings/AnagramDetectionPage";
 import ReverseLinkedListPage from "@pages/linked-lists/ReverseLinkedListPage";
+import FactorialPage from "./recursion/FactorialPage";
 
 const AlgorithmPage = () => {
   const { categoryId, algorithmId } = useParams<{
@@ -32,6 +33,8 @@ const AlgorithmPage = () => {
       return <AnagramDetectionPage />;
     case "reverse-linked-list":
       return <ReverseLinkedListPage />;
+    case "factorial":
+      return <FactorialPage />;
     default:
       // for unknown algorithms, redirect to category page
       return <Navigate to={`/categories/${categoryId}`} replace />;
