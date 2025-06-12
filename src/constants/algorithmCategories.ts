@@ -202,7 +202,17 @@ export const algorithmCategories: AlgorithmCategory[] = [
       border: "border-emerald-400/30",
       text: "text-emerald-300",
     },
-    algorithms: [],
+    algorithms: [
+      {
+        id: "in-order-traversal",
+        name: "In-order Traversal",
+        category: "trees",
+        difficulty: "Beginner",
+        description:
+          "Visit all nodes in a binary tree following left → root → right order. Produces sorted sequence for Binary Search Trees.",
+        dataStructureType: "tree",
+      },
+    ],
   },
   {
     id: "graphs",

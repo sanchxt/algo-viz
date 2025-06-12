@@ -8,6 +8,7 @@ import AnagramDetectionPage from "@pages/strings/AnagramDetectionPage";
 import ReverseLinkedListPage from "@pages/linked-lists/ReverseLinkedListPage";
 import FactorialPage from "./recursion/FactorialPage";
 import BalancedParenthesesPage from "./stacks/BalancedParenthesesPage";
+import InOrderTraversalPage from "./trees/InOrderTraversalPage";
 
 const AlgorithmPage = () => {
   const { categoryId, algorithmId } = useParams<{
@@ -38,6 +39,8 @@ const AlgorithmPage = () => {
       return <FactorialPage />;
     case "balanced-parentheses":
       return <BalancedParenthesesPage />;
+    case "in-order-traversal":
+      return <InOrderTraversalPage />;
     default:
       // for unknown algorithms, redirect to category page
       return <Navigate to={`/categories/${categoryId}`} replace />;
