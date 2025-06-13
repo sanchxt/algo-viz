@@ -51,7 +51,17 @@ export type StepType =
   | "graph_edge_explore"
   | "graph_cycle_detected"
   | "graph_backtrack"
-  | "graph_component_complete";
+  | "graph_component_complete"
+  // dp step types
+  | "dp_table_initialization"
+  | "dp_amount_processing"
+  | "dp_coin_consideration"
+  | "dp_subproblem_lookup"
+  | "dp_comparison"
+  | "dp_table_update"
+  | "dp_path_reconstruction"
+  | "dp_optimal_solution_found"
+  | "dp_no_solution";
 
 export interface StepContext {
   loopType?: "outer" | "inner" | "while" | "recursive" | "string_iteration";
@@ -113,6 +123,15 @@ export interface StepContext {
   parentNodeId?: string;
   cycleDetected?: boolean;
   componentNumber?: number;
+  // dp-specific context
+  coinValue?: number;
+  currentAmount?: number;
+  targetAmount?: number;
+  subproblemAmount?: number;
+  comparisonValues?: number[];
+  pathCoin?: number;
+  solutionFound?: boolean;
+  dpTableIndex?: number;
 }
 
 export interface DataStructureState {
@@ -216,6 +235,7 @@ export interface Algorithm {
     | "recursion"
     | "stacks"
     | "queues"
+    | "dynamic-programming"
     | "graphs";
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   description: string;

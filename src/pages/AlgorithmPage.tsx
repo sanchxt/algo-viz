@@ -11,6 +11,7 @@ import BalancedParenthesesPage from "@pages/stacks/BalancedParenthesesPage";
 import InOrderTraversalPage from "@pages/trees/InOrderTraversalPage";
 import BfsTraversalPage from "@pages/queues/BfsTraversalPage";
 import CycleDetectionPage from "@pages/graphs/CycleDetectionPage";
+import CoinChangePage from "./dp/CoinChangePage";
 
 const AlgorithmPage = () => {
   const { categoryId, algorithmId } = useParams<{
@@ -47,7 +48,8 @@ const AlgorithmPage = () => {
       return <BfsTraversalPage />;
     case "cycle-detection":
       return <CycleDetectionPage />;
-
+    case "coin-change":
+      return <CoinChangePage />;
     default:
       // for unknown algorithms, redirect to category page
       return <Navigate to={`/categories/${categoryId}`} replace />;

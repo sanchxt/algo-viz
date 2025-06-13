@@ -258,7 +258,17 @@ export const algorithmCategories: AlgorithmCategory[] = [
       border: "border-red-400/30",
       text: "text-red-300",
     },
-    algorithms: [],
+    algorithms: [
+      {
+        id: "coin-change",
+        name: "Coin Change",
+        category: "dynamic-programming",
+        difficulty: "Intermediate",
+        description:
+          "Find the minimum number of coins needed to make a given amount using dynamic programming to optimize overlapping subproblems.",
+        dataStructureType: "array",
+      },
+    ],
   },
   {
     id: "greedy",
