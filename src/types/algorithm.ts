@@ -40,7 +40,12 @@ export type StepType =
   | "stack_peek"
   | "character_check"
   | "validation_success"
-  | "validation_failure";
+  | "validation_failure"
+  // queue step types
+  | "queue_enqueue"
+  | "queue_dequeue"
+  | "queue_peek"
+  | "level_complete";
 
 export interface StepContext {
   loopType?: "outer" | "inner" | "while" | "recursive" | "string_iteration";
@@ -57,7 +62,9 @@ export interface StepContext {
     | "push"
     | "pop"
     | "peek"
-    | "validate";
+    | "validate"
+    | "enqueue"
+    | "dequeue";
   dataStructure?:
     | "array"
     | "tree"
@@ -72,7 +79,7 @@ export interface StepContext {
   passNumber?: number;
   iterationNumber?: number;
   characterIndex?: number;
-  stringIndex?: number;
+  stringIndex?: string;
   nodeId?: string;
   pointerType?: "prev" | "current" | "next" | "head";
   recursionLevel?: number;
@@ -83,6 +90,12 @@ export interface StepContext {
   bracketType?: "opening" | "closing";
   matchingBracket?: string;
   isValid?: boolean;
+  // queue-specific context
+  queueElement?: any;
+  queueSize?: number;
+  currentLevel?: number;
+  nodesInCurrentLevel?: number;
+  processedInLevel?: number;
 }
 
 export interface DataStructureState {
@@ -120,7 +133,10 @@ export interface HighlightInfo {
     | "call_frames"
     | "tree_nodes"
     | "stack_elements"
-    | "stack_top";
+    | "stack_top"
+    | "queue_elements"
+    | "queue_front"
+    | "queue_rear";
   values: any[];
   style?:
     | "highlight"
@@ -138,7 +154,10 @@ export interface HighlightInfo {
     | "returning"
     | "valid"
     | "invalid"
-    | "processing";
+    | "processing"
+    | "queued"
+    | "dequeued"
+    | "level_complete";
   color?: string;
   intensity?: "low" | "medium" | "high";
 }

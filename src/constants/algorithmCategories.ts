@@ -179,19 +179,6 @@ export const algorithmCategories: AlgorithmCategory[] = [
     ],
   },
   {
-    id: "queues",
-    name: "Queues",
-    description:
-      "Linear data structures that follow First-In-First-Out (FIFO) principle for insertion and deletion.",
-    icon: "🚶‍♂️",
-    color: {
-      gradient: "from-cyan-400/20 to-cyan-600/20",
-      border: "border-cyan-400/30",
-      text: "text-cyan-300",
-    },
-    algorithms: [],
-  },
-  {
     id: "binary-trees",
     name: "Binary Trees",
     description:
@@ -211,6 +198,29 @@ export const algorithmCategories: AlgorithmCategory[] = [
         description:
           "Visit all nodes in a binary tree following left → root → right order. Produces sorted sequence for Binary Search Trees.",
         dataStructureType: "tree",
+      },
+    ],
+  },
+  {
+    id: "queues",
+    name: "Queues",
+    description:
+      "Linear data structures that follow First-In-First-Out (FIFO) principle for insertion and deletion.",
+    icon: "🚶‍♂️",
+    color: {
+      gradient: "from-cyan-400/20 to-cyan-600/20",
+      border: "border-cyan-400/30",
+      text: "text-cyan-300",
+    },
+    algorithms: [
+      {
+        id: "bfs-traversal",
+        name: "BFS (Level-Order) Traversal",
+        category: "trees",
+        difficulty: "Beginner",
+        description:
+          "Visit all nodes in a binary tree level by level using a queue. Explores breadth-first, processing all nodes at each depth before moving deeper.",
+        dataStructureType: "queue",
       },
     ],
   },
