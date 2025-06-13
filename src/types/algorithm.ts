@@ -45,7 +45,13 @@ export type StepType =
   | "queue_enqueue"
   | "queue_dequeue"
   | "queue_peek"
-  | "level_complete";
+  | "level_complete"
+  // graph step types
+  | "graph_node_visit"
+  | "graph_edge_explore"
+  | "graph_cycle_detected"
+  | "graph_backtrack"
+  | "graph_component_complete";
 
 export interface StepContext {
   loopType?: "outer" | "inner" | "while" | "recursive" | "string_iteration";
@@ -64,7 +70,11 @@ export interface StepContext {
     | "peek"
     | "validate"
     | "enqueue"
-    | "dequeue";
+    | "dequeue"
+    | "visit"
+    | "explore"
+    | "detect_cycle"
+    | "backtrack";
   dataStructure?:
     | "array"
     | "tree"
@@ -96,6 +106,13 @@ export interface StepContext {
   currentLevel?: number;
   nodesInCurrentLevel?: number;
   processedInLevel?: number;
+  // graph-specific context
+  fromNodeId?: string;
+  toNodeId?: string;
+  edgeId?: string;
+  parentNodeId?: string;
+  cycleDetected?: boolean;
+  componentNumber?: number;
 }
 
 export interface DataStructureState {
@@ -136,7 +153,9 @@ export interface HighlightInfo {
     | "stack_top"
     | "queue_elements"
     | "queue_front"
-    | "queue_rear";
+    | "queue_rear"
+    | "graph_nodes"
+    | "graph_edges";
   values: any[];
   style?:
     | "highlight"
@@ -157,7 +176,11 @@ export interface HighlightInfo {
     | "processing"
     | "queued"
     | "dequeued"
-    | "level_complete";
+    | "level_complete"
+    | "exploring"
+    | "cycle"
+    | "path"
+    | "backtrack";
   color?: string;
   intensity?: "low" | "medium" | "high";
 }
@@ -192,7 +215,8 @@ export interface Algorithm {
     | "linked-lists"
     | "recursion"
     | "stacks"
-    | "queues";
+    | "queues"
+    | "graphs";
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   description: string;
   dataStructureType?:

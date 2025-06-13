@@ -235,7 +235,17 @@ export const algorithmCategories: AlgorithmCategory[] = [
       border: "border-orange-400/30",
       text: "text-orange-300",
     },
-    algorithms: [],
+    algorithms: [
+      {
+        id: "cycle-detection",
+        name: "Cycle Detection",
+        category: "graphs",
+        difficulty: "Beginner",
+        description:
+          "Detect if an undirected graph contains cycles using depth-first search to identify back edges that form loops.",
+        dataStructureType: "graph",
+      },
+    ],
   },
   {
     id: "dynamic-programming",
