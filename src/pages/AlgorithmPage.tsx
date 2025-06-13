@@ -9,6 +9,7 @@ import ReverseLinkedListPage from "@pages/linked-lists/ReverseLinkedListPage";
 import FactorialPage from "./recursion/FactorialPage";
 import BalancedParenthesesPage from "./stacks/BalancedParenthesesPage";
 import InOrderTraversalPage from "./trees/InOrderTraversalPage";
+import BfsTraversalPage from "./queues/BfsTraversalPage";
 
 const AlgorithmPage = () => {
   const { categoryId, algorithmId } = useParams<{
@@ -41,6 +42,9 @@ const AlgorithmPage = () => {
       return <BalancedParenthesesPage />;
     case "in-order-traversal":
       return <InOrderTraversalPage />;
+    case "bfs-traversal":
+      return <BfsTraversalPage />;
+
     default:
       // for unknown algorithms, redirect to category page
       return <Navigate to={`/categories/${categoryId}`} replace />;
