@@ -6,10 +6,11 @@ import LinearSearchPage from "@pages/searching/LinearSearchPage";
 import TwoPointersPage from "@pages/two-pointers/TwoPointersPage";
 import AnagramDetectionPage from "@pages/strings/AnagramDetectionPage";
 import ReverseLinkedListPage from "@pages/linked-lists/ReverseLinkedListPage";
-import FactorialPage from "./recursion/FactorialPage";
-import BalancedParenthesesPage from "./stacks/BalancedParenthesesPage";
-import InOrderTraversalPage from "./trees/InOrderTraversalPage";
-import BfsTraversalPage from "./queues/BfsTraversalPage";
+import FactorialPage from "@pages/recursion/FactorialPage";
+import BalancedParenthesesPage from "@pages/stacks/BalancedParenthesesPage";
+import InOrderTraversalPage from "@pages/trees/InOrderTraversalPage";
+import BfsTraversalPage from "@pages/queues/BfsTraversalPage";
+import CycleDetectionPage from "@pages/graphs/CycleDetectionPage";
 
 const AlgorithmPage = () => {
   const { categoryId, algorithmId } = useParams<{
@@ -44,6 +45,8 @@ const AlgorithmPage = () => {
       return <InOrderTraversalPage />;
     case "bfs-traversal":
       return <BfsTraversalPage />;
+    case "cycle-detection":
+      return <CycleDetectionPage />;
 
     default:
       // for unknown algorithms, redirect to category page
