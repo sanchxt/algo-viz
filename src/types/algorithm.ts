@@ -61,7 +61,16 @@ export type StepType =
   | "dp_table_update"
   | "dp_path_reconstruction"
   | "dp_optimal_solution_found"
-  | "dp_no_solution";
+  | "dp_no_solution"
+  // greedy step types
+  | "greedy_insight"
+  | "formula_derivation"
+  | "decision_tree"
+  | "cost_calculation"
+  | "element_removal"
+  | "optimality_proof"
+  | "greedy_selection"
+  | "pair_comparison";
 
 export interface StepContext {
   loopType?: "outer" | "inner" | "while" | "recursive" | "string_iteration";
@@ -84,7 +93,10 @@ export interface StepContext {
     | "visit"
     | "explore"
     | "detect_cycle"
-    | "backtrack";
+    | "backtrack"
+    | "calculate"
+    | "select"
+    | "optimize";
   dataStructure?:
     | "array"
     | "tree"
@@ -132,6 +144,13 @@ export interface StepContext {
   pathCoin?: number;
   solutionFound?: boolean;
   dpTableIndex?: number;
+  // greedy-specific context
+  greedyChoice?: any;
+  localOptimal?: any;
+  globalOptimal?: any;
+  costValue?: number;
+  selectedPair?: [any, any];
+  optimizationCriteria?: string;
 }
 
 export interface DataStructureState {
@@ -199,7 +218,10 @@ export interface HighlightInfo {
     | "exploring"
     | "cycle"
     | "path"
-    | "backtrack";
+    | "backtrack"
+    | "selected"
+    | "optimal"
+    | "cost";
   color?: string;
   intensity?: "low" | "medium" | "high";
 }
@@ -236,7 +258,8 @@ export interface Algorithm {
     | "stacks"
     | "queues"
     | "dynamic-programming"
-    | "graphs";
+    | "graphs"
+    | "greedy";
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   description: string;
   dataStructureType?:
