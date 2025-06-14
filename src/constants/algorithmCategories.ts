@@ -281,7 +281,17 @@ export const algorithmCategories: AlgorithmCategory[] = [
       border: "border-violet-400/30",
       text: "text-violet-300",
     },
-    algorithms: [],
+    algorithms: [
+      {
+        id: "min-cost-array",
+        name: "Minimum Cost to Make Array Size 1",
+        category: "greedy",
+        difficulty: "Intermediate",
+        description:
+          "Find the minimum cost to reduce an array to size 1 by removing larger elements from pairs, using greedy strategy to minimize total cost.",
+        dataStructureType: "array",
+      },
+    ],
   },
   {
     id: "heaps",

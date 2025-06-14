@@ -12,6 +12,7 @@ import InOrderTraversalPage from "@pages/trees/InOrderTraversalPage";
 import BfsTraversalPage from "@pages/queues/BfsTraversalPage";
 import CycleDetectionPage from "@pages/graphs/CycleDetectionPage";
 import CoinChangePage from "./dp/CoinChangePage";
+import MinCostArrayPage from "./greedy/MinCostArrayPage";
 
 const AlgorithmPage = () => {
   const { categoryId, algorithmId } = useParams<{
@@ -50,6 +51,8 @@ const AlgorithmPage = () => {
       return <CycleDetectionPage />;
     case "coin-change":
       return <CoinChangePage />;
+    case "min-cost-array":
+      return <MinCostArrayPage />;
     default:
       // for unknown algorithms, redirect to category page
       return <Navigate to={`/categories/${categoryId}`} replace />;
