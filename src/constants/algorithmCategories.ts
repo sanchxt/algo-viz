@@ -304,7 +304,17 @@ export const algorithmCategories: AlgorithmCategory[] = [
       border: "border-slate-400/30",
       text: "text-slate-300",
     },
-    algorithms: [],
+    algorithms: [
+      {
+        id: "k-largest-elements",
+        name: "K Largest Elements",
+        category: "heaps",
+        difficulty: "Intermediate",
+        description:
+          "Find the K largest elements from an array using a min-heap of size K. Efficiently maintains top K elements with O(n log k) time complexity.",
+        dataStructureType: "heap",
+      },
+    ],
   },
 ];
 
