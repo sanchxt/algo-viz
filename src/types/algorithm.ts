@@ -70,7 +70,16 @@ export type StepType =
   | "element_removal"
   | "optimality_proof"
   | "greedy_selection"
-  | "pair_comparison";
+  | "pair_comparison"
+  // heap step types
+  | "heap_initialization"
+  | "heap_push"
+  | "heap_pop"
+  | "heap_peek"
+  | "heap_size_check"
+  | "heap_compare"
+  | "heap_maintain_size"
+  | "heap_result_found";
 
 export interface StepContext {
   loopType?: "outer" | "inner" | "while" | "recursive" | "string_iteration";
@@ -90,6 +99,8 @@ export interface StepContext {
     | "validate"
     | "enqueue"
     | "dequeue"
+    | "initialize"
+    | "skip"
     | "visit"
     | "explore"
     | "detect_cycle"
@@ -107,7 +118,10 @@ export interface StepContext {
     | "hashmap"
     | "linkedlist"
     | "call_stack"
-    | "recursion_tree";
+    | "recursion_tree"
+    | "heap"
+    | "min_heap"
+    | "max_heap";
   passNumber?: number;
   iterationNumber?: number;
   characterIndex?: number;
@@ -151,6 +165,15 @@ export interface StepContext {
   costValue?: number;
   selectedPair?: [any, any];
   optimizationCriteria?: string;
+  // heap-specific context
+  heapSize?: number;
+  heapCapacity?: number;
+  heapElement?: number;
+  currentInputElement?: number;
+  inputIndex?: number;
+  heapOperation?: "push" | "pop" | "peek" | "compare";
+  heapMaintained?: boolean;
+  kValue?: number;
 }
 
 export interface DataStructureState {
@@ -164,7 +187,8 @@ export interface DataStructureState {
     | "stack"
     | "queue"
     | "call_stack"
-    | "recursion_tree";
+    | "recursion_tree"
+    | "heap";
   data: any;
   metadata?: {
     label?: string;
@@ -193,7 +217,12 @@ export interface HighlightInfo {
     | "queue_front"
     | "queue_rear"
     | "graph_nodes"
-    | "graph_edges";
+    | "graph_edges"
+    | "heap_elements"
+    | "heap_top"
+    | "heap_parent"
+    | "heap_children"
+    | "input_element";
   values: any[];
   style?:
     | "highlight"
@@ -221,7 +250,15 @@ export interface HighlightInfo {
     | "backtrack"
     | "selected"
     | "optimal"
-    | "cost";
+    | "cost"
+    | "heap_highlight"
+    | "heap_top"
+    | "heap_parent"
+    | "heap_child"
+    | "heap_result"
+    | "input_current"
+    | "heap_compare"
+    | "heap_maintain";
   color?: string;
   intensity?: "low" | "medium" | "high";
 }
@@ -259,7 +296,8 @@ export interface Algorithm {
     | "queues"
     | "dynamic-programming"
     | "graphs"
-    | "greedy";
+    | "greedy"
+    | "heaps";
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   description: string;
   dataStructureType?:
@@ -271,7 +309,8 @@ export interface Algorithm {
     | "linkedlist"
     | "stack"
     | "queue"
-    | "mixed";
+    | "mixed"
+    | "heap";
 }
 
 export type Language =

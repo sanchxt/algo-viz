@@ -13,6 +13,7 @@ import BfsTraversalPage from "@pages/queues/BfsTraversalPage";
 import CycleDetectionPage from "@pages/graphs/CycleDetectionPage";
 import CoinChangePage from "./dp/CoinChangePage";
 import MinCostArrayPage from "./greedy/MinCostArrayPage";
+import KLargestElementsPage from "./heaps/KLargestElementsPage";
 
 const AlgorithmPage = () => {
   const { categoryId, algorithmId } = useParams<{
@@ -53,6 +54,8 @@ const AlgorithmPage = () => {
       return <CoinChangePage />;
     case "min-cost-array":
       return <MinCostArrayPage />;
+    case "k-largest-elements":
+      return <KLargestElementsPage />;
     default:
       // for unknown algorithms, redirect to category page
       return <Navigate to={`/categories/${categoryId}`} replace />;
